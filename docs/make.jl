@@ -1,3 +1,4 @@
+push!(LOAD_PATH, "G:\\Python Programme\\BALL.jl\\src\\" )
 using BALL
 using Documenter
 
