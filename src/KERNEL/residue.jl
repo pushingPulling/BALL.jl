@@ -83,11 +83,17 @@ Residue(res_name::String,num_of_children::Int64, ins_code::Char, res_number::Int
 
 
 getName(res::Residue) = !isnothing(res.name_) ? (res.name_) : "N/A"
-
-"Checks if `res` is an [Amino Acid](`Amino_Acids`)"
+"""
+    isAminoAcid(res::Residue)
+Checks if `res` is an [Amino Acid](@ref ).
+"""
+"Checks if `res` is an [Amino Acid](@ref )"
 isAminoAcid(res::Residue) = return hasProperty(res, ("amino_acid",true) )
+"""
+    isNTerminal(res::Residue)
+Checks if `res` is a [N-Terminus](https://en.wikipedia.org/wiki/N-terminus).
+"""
 
-"Checks if `res` is a [N-Terminus](https://en.wikipedia.org/wiki/N-terminus)`)"
 isNTerminal(res::Residue) = begin
     !isAminoAcid(res) && return false
     chain = res.parent_

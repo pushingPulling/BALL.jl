@@ -10,7 +10,7 @@ import Base.convert, Base.iterate
 """
 An Interface which implements functions for tree traversal, exploration, manipulation, iteration.
 Implements getters and setters. Also implements functions to collect objects from the tree.\n
-See also [`System`](@ref), [`Chain`](@ref), [`Residue`](@ref), [`Atom`](@ref)
+See also [`System`](@ref), [`Chain`](@ref), [`Residue`](@ref), [`Atom`](@ref).
 """
 abstract type CompositeInterface <: Selectable end
 
@@ -20,7 +20,7 @@ abstract type CompositeInterface <: Selectable end
     then DFS-like right subtree)
 =#
 """
-    Base.iterate(c::CompositeInterface)
+    Base.iterate(::CompositeInterface)
 Iterates over the tree rooted in `c` in [Pre-order](https://en.wikipedia.org/wiki/Tree_traversal#Pre-order,_NLR).
 Use [`recursive_collect`](@ref) as `Base.iterate` is slower.
 """
@@ -152,7 +152,12 @@ removeChild(root::T, child_node::S) where{T,S <: CompositeInterface} = begin
     return true
 
 end
-"Gets `node`'s parent. Can return `nothing`"
+
+
+"""
+    getParent(node::CompositeInterface)
+Gets `node`'s parent. Can return `nothing`.
+"""
 getParent(node::CompositeInterface) = begin
     return node.parent_
 end
@@ -229,7 +234,10 @@ appendChild(old_node::T, new_node::S) where {T,S <: CompositeInterface} = begin
 
 end
 
-"Returns `true` if `other` and `comp are siblings`, else `false`"
+"""
+   isSibling(comp::CompositeInterface, other::CompositeInterface)
+Returns `true` if `other` and `comp are siblings`, else `false`
+"""
 isSibling(comp::CompositeInterface, other::CompositeInterface) = begin
     if !isnothing(comp.parent_)
         return (other in getChildren(comp.parent_))
@@ -287,7 +295,7 @@ end
     recursive_collect(node::Type1, collectType::Type{Type2}) where {Type1, Type2 <: CompositeInterface}
 Iterates over the tree rooted in `node` in [Pre-order](https://en.wikipedia.org/wiki/Tree_traversal#Pre-order,_NLR).
 `collectType` filters the type to be collected. \n
-See also [`KERNEL.collectAtoms`](@ref), [`KERNEL.collectResidues`](@ref), [`KERNEL.collectChains`](@ref).
+See also [`collectAtoms`](@ref), [`collectResidues`](@ref), [`collectChains`](@ref).
 """
 recursive_collect(node::Type1, collectType::Type{Type2}) where {Type1, Type2 <: CompositeInterface} = begin
     #performs a collect on current node and all its ancestors
@@ -317,14 +325,20 @@ Base.collect(node::T) where T <: CompositeInterface = begin
     return recursive_collect(node,CompositeInterface)
 end
 
-"Deselets any selected Nodes. See [`Selectable`](@ref)."
+"""
+    clearSelectionTree(x::CompositeInterface)
+Deselets any selected Nodes. See [`Selectable`](@ref).
+"""
 function clearSelectionTree(x::CompositeInterface)
     for node in x
         deselect(x)
     end
 end
 
-"Counts the number of immediate Children."
+"""
+    countChildren(comp::CompositeInterface)
+Counts the number of immediate Children.
+"""
 countChildren(comp::CompositeInterface) = begin
     count = 0
     if !isnothing(comp.first_child_)
@@ -337,11 +351,17 @@ countChildren(comp::CompositeInterface) = begin
     end
     return count
 end
-"Getter of property-Vector"
+"""
+    getProperties(::CompositeInterface)
+Getter of property-Vector
+"""
 getProperties(comp::CompositeInterface) = begin
     return comp.properties_
 end
-"Checks if `comp` has property `property`."
+"""
+    hasProperty(comp::CompositeInterface, property::String)
+Checks if `comp` has property `property`.
+"""
 hasProperty(comp::CompositeInterface, property::String) = begin
     if any([property == x[1] for x in getProperties(comp) ])
        return true
@@ -349,7 +369,10 @@ hasProperty(comp::CompositeInterface, property::String) = begin
     return false
 end
 
-"Gets value of `property` if set, else `nothing`."
+"""
+    getProperty(comp::CompositeInterface, property::String)
+Gets value of `property` if set, else `nothing`.
+"""
 getProperty(comp::CompositeInterface, property::String) = begin
     if hasProperty(comp,property)
         index = findfirst((x::Tuple{String,UInt8})-> property == x[1], getProperties(comp))
@@ -358,7 +381,10 @@ getProperty(comp::CompositeInterface, property::String) = begin
     return nothing
 end
 
-"Setter. Deletes old property if needed."
+"""
+    setProperty(::CompositeInterface, ::Tuple{String,UInt8})
+"Setter. Deletes old property if needed.
+"""
 setProperty(comp::CompositeInterface, property::Tuple{String,UInt8}) = begin
     if hasProperty(comp,property[1])
         index = findfirst((x::Tuple{String,UInt8})-> property[1] == x[1], getProperties(comp))

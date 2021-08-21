@@ -56,11 +56,12 @@ Base.eltype(::T) where T <: CompositeIterator = iterator_to_composite[T]
 """
     Base.iterate(s :: T) where T <: CompositeIterator
 Iterator that returns all Nodes of the respective Type in the entire tree.\\
-Preferred functions with enhanced speed: [`collectAtoms`](@ref),[`collectResidues`](@ref),[`collectChains`](@ref)
+Preferred functions with enhanced speed: [`collectAtoms`](@ref),[`collectResidues`](@ref),[`collectChains`](@ref),
 [`collectSystems`](@ref)
 Usage:\\
 (`node` is of Type `CompositeInterface` or one of the `KERNEL` types.)
-```for system in SystemIterator(node)  #substiute `SystemIterator` for `ChainIterator`,`ResidueIterator`,`AtomIterator`
+```
+for system in SystemIterator(node)  #substiute `SystemIterator` for `ChainIterator`,`ResidueIterator`,`AtomIterator`
     #...
 end
 ```

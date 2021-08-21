@@ -73,7 +73,7 @@ Bond(at1::AtomInterface, at2::AtomInterface; name::String ="",
 """
     createBond(at_owner::AtomInterface, at_guest::AtomInterface; name::String ="",
         order::Order = ORDER__ANY, type::BondType = TYPE__UNKNOWN)
-Creates a Bond between two alredy existing Atoms.
+Creates a Bond between two alredy existing Atoms. See `Order` and `BondType` in Bond.jl.
 """
 createBond(at_owner::AtomInterface, at_guest::AtomInterface; name::String ="",
         order::Order = ORDER__ANY, type::BondType = TYPE__UNKNOWN) = begin
@@ -84,12 +84,18 @@ createBond(at_owner::AtomInterface, at_guest::AtomInterface; name::String ="",
     return temp
 end
 
-"Checks if a Bond exists"
+"""
+    bondExists(::AtomInterface, ::AtomInterface)
+Checks if a Bond exists.
+"""
 bondExists(at1::AtomInterface, at2::AtomInterface) = begin
     return haskey(at1.bonds_,at2)
 end
 
-"Deletes a Bond between two `Atom`s. Has no effect if a Bond between the `Atom`s doesn't exist."
+"""
+    deleteBond(::AtomInterface, ::AtomInterface)
+Deletes a Bond between two `Atom`s. Has no effect if a Bond between the `Atom`s doesn't exist.
+"""
 deleteBond(at1::AtomInterface, at2::AtomInterface) = begin
     delete!(at1.bonds_, at2)
     delete!(at2.bonds_, at1)
@@ -100,12 +106,16 @@ printBonds(at::AtomInterface, io::IO = Base.stdout) = begin
     println(io,"$at has bonds to ",
      join(keys(at.bonds_),", "),". ")
 end
-"See [`getProperties`](@ref)"
+"""
+    getProperties(::Bond)
+"""
 getProperties(comp::Bond) = begin
     return comp.properties_
 end
 
-"See [`hasProperty`](@ref)"
+"""
+    hasProperty(::Bond, ::String)
+"""
 hasProperty(comp::Bond, property::String) = begin
     if any([property == x[1] for x in getProperties(comp) ])
        return true
@@ -113,7 +123,9 @@ hasProperty(comp::Bond, property::String) = begin
     return false
 end
 
-"See [`getProperty`](@ref)"
+"""
+    getProperty(::Bond, ::Tuple{String,UInt8})
+"""
 getProperty(comp::Bond, property::Tuple{String,UInt8}) = begin
     if hasProperty(comp,property)
         index = findfirst((x::Tuple{String,UInt8})-> property[1] == x[1], getProperties(comp))
@@ -122,7 +134,9 @@ getProperty(comp::Bond, property::Tuple{String,UInt8}) = begin
     return nothing
 end
 
-"See [`setProperty`](@ref)"
+"""
+    setProperty(::Bond, ::Tuple{String,UInt8})
+"""
 setProperty(comp::Bond, property::Tuple{String,UInt8}) = begin
     if hasProperty(comp,property[1])
         index = findfirst((x::Tuple{String,UInt8})-> property[1] == x[1], getProperties(comp))
@@ -131,7 +145,9 @@ setProperty(comp::Bond, property::Tuple{String,UInt8}) = begin
     push!(comp.properties_, property)
 
 end
-"See [`setProperty`](@ref)"
+"""
+    setProperty(::Bond, ::Tuple{String,Bool})
+"""
 setProperty(comp::Bond, property::Tuple{String,Bool}) = setProperty(comp,(property[1],UInt8(property[2])))
 
 

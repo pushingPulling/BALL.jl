@@ -1,5 +1,5 @@
 import Base: show, <, >, findall
-export countAtoms, collectAtoms, collectResidues, collectChains, collectBonds, findfirst, findall
+export DataFrameSystem, countAtoms, collectAtoms, collectResidues, collectChains, collectBonds, findfirst, findall
 
 """
     countAtoms(node::CompositeInterface)
@@ -153,16 +153,13 @@ end
 
 import Base.getindex
 
-"""
-    getindex(::CompositeInterface)
-Enables the `[]` operator on `COMPOSITE` and `KERNEL` types.
-"""
 Base.getindex(x::CompositeInterface,sy::Core.Symbol) = Base.getfield(x,sy)
 Base.getindex(x::System, i::Int) = collectChains(x)[i]
 Base.getindex(x::Residue, i::Int) = collectResidues(x)[i]
 Base.getindex(x::Chain, i::Int) = collectAtoms(x)[i]
 
 """
+    DataFrameSystem
 `DataFrameSystem` is a collection of `DataFrame`s to store `KERNEL` types in.
 """
 mutable struct DataFrameSystem

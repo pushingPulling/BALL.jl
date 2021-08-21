@@ -24,7 +24,7 @@ mutable struct Atom <: AtomInterface    #AtomInterface inherits from CompositeIn
     radius_         ::Union{Float64,Nothing}
     type_           ::Union{UInt8,Nothing}
     number_of_bonds_::Union{UInt8,Nothing}
-    formal_charge_  ::Union{Index,Nothing}
+    formal_charge_  ::Union{Int64,Nothing}
     position_       ::Union{SVector{3,Float64},Nothing}
     charge_         ::Union{Float64,Nothing}
     velocity_       ::Union{SVector{3,Float64},Nothing}
@@ -128,7 +128,7 @@ collectBonds(atoms::Vector{Atom}) = begin
 end
 
 
-setFormalCharge(at::Atom, new_charge::Index) = begin at.formal_charge_ = new_charge end
+setFormalCharge(at::Atom, new_charge::Int64) = begin at.formal_charge_ = new_charge end
 
 Base.show(io::IO, at::Atom) = print(io, "Atom$(at.serial_)[",
     #"$( (isnothing(at.element_)) ? "-" : string(at.element_.symbol_) )|",

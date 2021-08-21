@@ -1,11 +1,16 @@
 
 export
-    calculateRMSD, assignByName, assignCAlphaAtoms, assignBackboneAtoms
-"`AtomBijection` is a bijective Map of `Atom`s. Read usage at [Bijection's documentation'](https://github.com/scheinerman/Bijections.jl#using-a-bijection)"
+    AtomBijection, calculateRMSD, assignByName, assignCAlphaAtoms, assignBackboneAtoms
+
+"""
+    AtomBijection
+`AtomBijection` is a bijective Map of `Atom`s. Read usage at [Bijection's documentation](https://github.com/scheinerman/Bijections.jl#using-a-bijection)
+"""
 const AtomBijection = Bijection{Atom,Atom}
 
 
 """
+    calculateRMSD(bijec::AtomBijection)
 Gets the [Root-mean-square-deviation](https://en.wikipedia.org/wiki/Root-mean-square_deviation)
 of the atom in `bijec`.
 """
@@ -38,7 +43,10 @@ function assignByName(A::Composite,  B::Composite, limit_to_selection::Bool)
     return result
 end
 
-"Maps C-alpha atoms in `A` to C-alpha atoms in `B`."
+"""
+    assignCAlphaAtoms(A::Composite,  B::Composite, ::Bool)
+Maps C-alpha atoms in `A` to C-alpha atoms in `B`.
+"""
 function assignCAlphaAtoms(A::Composite,  B::Composite, limit_to_selection::Bool)
     result = AtomBijection()
     res_list_A= collectResidues(A)
@@ -54,7 +62,10 @@ function assignCAlphaAtoms(A::Composite,  B::Composite, limit_to_selection::Bool
     return result
 end
 
-"Maps the backbone atoms in `A` to the backbone atoms in `B`."
+"""
+    assignBackboneAtoms(A::Composite, B::Composite, limit_to_selection::Bool)
+Maps the backbone atoms in `A` to the backbone atoms in `B`.
+"""
 assignBackboneAtoms(A::Composite, B::Composite, limit_to_selection::Bool) = begin
     result = AtomBijection()
     res_list_A= collectResidues(A)

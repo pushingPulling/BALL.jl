@@ -7,7 +7,7 @@ global:
 #not the same implementation as in C++BALL
 
 export
-	Byte, Position, Handle, Size, Distance, Index, ASCII, Amino_Acids,
+	Byte, Position, Handle, ASCII, Amino_Acids,
 	BALL_QSAR_RINGPERCEEPTIONPROCESSOR_RUN_COUNT,
 	BALL_QSAR_RINGPERCEEPTIONPROCESSOR_MAX_RUNS,
 	BALL_HALF_OF_MAX_RING_SIZE, BALL_Properties

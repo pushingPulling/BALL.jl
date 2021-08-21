@@ -10,8 +10,8 @@ export System
 """
 Represents a Biological System. Usual use cases are:\\
 A System holds multiple Chains (represents a Protein).\\
-A System holds multiple Systems (e.g. represents a System of multiple Proteins.\\
-See also [`CompositeInterface`](@ref)
+A System holds multiple Systems (e.g. represents a System of multiple Proteins).\\
+See also [`CompositeInterface`](@ref).
 """
 mutable struct System <: CompositeInterface
     name_                                       ::Union{String,Nothing}

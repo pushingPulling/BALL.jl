@@ -5,8 +5,11 @@ PTE:
 - Date: 2021-06-03
 =#
 
-
-"Represents an Element. [`Atom`](@ref) holds objects of `Element`"
+export Element
+"""
+	Element
+Represents an Element. [`Atom`](@ref) holds objects of `Element`.
+"""
 struct Element
     name_                   ::String
     symbol_                 ::String
