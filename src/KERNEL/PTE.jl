@@ -6,7 +6,7 @@ PTE:
 =#
 
 
-
+"Represents an Element. [`Atom`](@ref) holds objects of `Element`"
 struct Element
     name_                   ::String
     symbol_                 ::String
@@ -50,7 +50,7 @@ struct Element
 			end
 end
 
-
+"Periodic Table of Elements"
 const elements_ = Element[
 #			 name			symbol	group	period	number	weight		atomicradius	cov.radius	vdw.radius	metal	en
     Element("Actinium",		"Ac",	3,	 	7,	 	89,		227.0278,	1.88,			0.0,		0.0,		true,	1.3	),

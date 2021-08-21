@@ -4,6 +4,7 @@ selectable:
 - Author: Dan
 - Date: 2021-06-28
 =#
+"Objects can be selected and deselected. Supertype of [`CompositeInterface`](@ref)."
 abstract type Selectable end
 
 function select(x::Selectable)

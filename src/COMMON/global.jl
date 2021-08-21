@@ -24,7 +24,7 @@ const Handle = BALL_SIZE_TYPE
 const Distance = BALL_INDEX_TYPE
 const Index = BALL_INDEX_TYPE
 
-#this being an enum on one hand makes sence, because we want to store this info in bytes (UInt8s)
+#this being an enum on one hand makes sense, because we want to store this info in bytes (UInt8s)
 #but it also doesnt because we want it to be interpreted as a Char - requiring to convert it every time youw ant to use it
 @enum ASCII begin
 
@@ -68,10 +68,12 @@ const Position_MAX = typemax(BALL_INDEX_TYPE) - 1
 #const INVALID_Size = typemax(Size)
 #const Size_MIN = 0;
 #const Size_MAX = typemax(Size) - 1;
-
+"A String-Vector of all Amino Acid abbreviations."
 const Amino_Acids = String["ALA", "CYS", "ASP", "GLU", "PHE", "GLY", "HIS", "ILE", "LYS", "LEU",
  							"MET", "ASN", "PRO", "GLN", "ARG", "SER", "THR", "VAL", "TRP", "TYR"]
 BALL_QSAR_RINGPERCEEPTIONPROCESSOR_RUN_COUNT = 1
 BALL_QSAR_RINGPERCEEPTIONPROCESSOR_MAX_RUNS = 20
+"A String-Vector of all available Properties. Note: Properties can be added at runtime. (Needs testing tho)"
 BALL_Properties = String["amino_acid", "InRing"]
+"Ball can only percieve Rings of Size 2*`BALL_HALF_OF_MAX_RING_SIZE`"
 const BALL_HALF_OF_MAX_RING_SIZE = 20		#Only detect Rings in SSSR with maximally 2*BALL_HALF_OF_MAX_RING_SIZE atoms

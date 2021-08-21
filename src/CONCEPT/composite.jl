@@ -8,7 +8,12 @@ composite:
 export
     Composite
 
-
+"""
+`Composite` implements the minimum set of fields that `System`, `Chain`, `Residue`, `Atom` must also
+implement. An object of `Composite` is a Node in a hierarchical tree of many types which subtype
+`CompositeInterface`.\n
+See also [`CompositeInterface`](@ref),[`System`](@ref), [`Chain`](@ref), [`Residue`](@ref), [`Atom`](@ref)
+"""
 mutable struct Composite <: CompositeInterface
     name_                                       ::String
     number_of_children_                         ::Int64

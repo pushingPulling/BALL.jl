@@ -7,6 +7,12 @@ system:
 import ..CONCEPT.getName
 export System
 
+"""
+Represents a Biological System. Usual use cases are:\\
+A System holds multiple Chains (represents a Protein).\\
+A System holds multiple Systems (e.g. represents a System of multiple Proteins.\\
+See also [`CompositeInterface`](@ref)
+"""
 mutable struct System <: CompositeInterface
     name_                                       ::Union{String,Nothing}
     number_of_children_                         ::Union{Int64,Nothing}

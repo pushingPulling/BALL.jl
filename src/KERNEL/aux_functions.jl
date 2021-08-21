@@ -1,12 +1,10 @@
-#=
-aux_functions:
-- Julia version: 
-- Author: Dan
-- Date: 2021-08-20
-=#
 import Base: show, <, >, findall
 export countAtoms, collectAtoms, collectResidues, collectChains, collectBonds, findfirst, findall
 
+"""
+    countAtoms(node::CompositeInterface)
+Counts all the atoms in the Subtree rooted at `node`.
+"""
 countAtoms(node::CompositeInterface) = begin
     number_of_atoms::Int64 = 0
     if isnothing(node.first_child_)
@@ -26,30 +24,62 @@ countAtoms(node::CompositeInterface) = begin
     return number_of_atoms
 end
 
+"""
+    collectAtoms(node::CompositeInterface)
+Collects all the `Atom`s of the subtree rooted in `node`.
+"""
 collectAtoms(node::CompositeInterface) = begin
     recursive_collect(node,Atom)
 end
 
+"""
+    collectAtoms(node::CompositeInterface, selector::Function)
+Collects all the `Atom`s of the subtree rooted in `node`.  Filters the returned list using `selector`.
+"""
 collectAtoms(node::CompositeInterface, selector::Function) = begin
     filter!(selector, collectAtoms(node))
 end
 
+
+"""
+    collectResidue(node::CompositeInterface)
+Collects all the `Residue`s of the subtree rooted in `node`.
+"""
+collectResidues(node::CompositeInterface) = begin
+    recursive_collect(node,Residue)
+end
+
+"""
+    collectResidues(node::CompositeInterface, selector::Function)
+Collects all the `Residue`s of the subtree rooted in `node`.  Filters the returned list using `selector`.
+"""
 collectResidues(node::CompositeInterface, selector::Function) = begin
     filter!(selector, collectResidues(node))
 end
+
+
+"""
+    collectChains(node::CompositeInterface)
+Collects all the `Chain`s of the subtree rooted in `node`.
+"""
+collectChains(node::CompositeInterface) = begin
+    recursive_collect(node,Chain)
+end
+
+
+"""
+    collectChains(node::CompositeInterface, selector::Function)
+Collects all the `Chain`s of the subtree rooted in `node`.  Filters the returned list using `selector`.
+"""
 collectChains(node::CompositeInterface, selector::Function) = begin
     filter!(selector, collectChains(node))
 end
 
 
-collectResidues(node::CompositeInterface) = begin
-    recursive_collect(node,Residue)
-end
-
-collectChains(node::CompositeInterface) = begin
-    recursive_collect(node,Chain)
-end
-
+"""
+    collectBonds(node::CompositeInterface)
+Returns a `Set` of all the `Bond`s of the atoms in the subtree rooted in `node`.
+"""
 collectBonds(node::CompositeInterface) = begin
     bonds = Set{Bond}()
     for at in collectAtoms(node)
@@ -61,9 +91,6 @@ end
 Base.show(io::IO, comp::CompositeInterface) = print(io, typeof(comp)," \"",getName(comp), "\" with ",
 countChildren(comp), " child",countChildren(comp) == 1 ? "" : "ren", " containing ", countAtoms(comp)," Atoms")
 
-
-#this code creates an ordering reflecting the hierarchy of the kernel classes
-#e.g. System > Chain is true, System < Chain is false, System < System is false
 const comparisonops = [:<,:>]
 const kerneltype = [Atom,Residue,Chain,System]
 for x in kerneltype
@@ -77,6 +104,12 @@ for x in kerneltype
 end
 
 import Base.findfirst
+"""
+    findfirst(start_node::CompositeInterface,target_type::Type{T}, chain_attributes=(),
+        residue_attributes=(), atom_attributes=()) where T<:CompositeInterface
+Finds the first node for which all the attributes in the `Named Tuple`s apply.
+Omitting Tuples causes the function to stop early.
+"""
 findfirst(start_node::CompositeInterface,target_type::Type{T}, chain_attributes=(),
         residue_attributes=(), atom_attributes=()) where T<:CompositeInterface = begin
 
@@ -120,14 +153,18 @@ end
 
 import Base.getindex
 
+"""
+    getindex(::CompositeInterface)
+Enables the `[]` operator on `COMPOSITE` and `KERNEL` types.
+"""
 Base.getindex(x::CompositeInterface,sy::Core.Symbol) = Base.getfield(x,sy)
-
-#following `getindex` functions are slow and only for convenience
-#idea to speed it up: only collect when underlying system has been changed.
 Base.getindex(x::System, i::Int) = collectChains(x)[i]
 Base.getindex(x::Residue, i::Int) = collectResidues(x)[i]
 Base.getindex(x::Chain, i::Int) = collectAtoms(x)[i]
 
+"""
+`DataFrameSystem` is a collection of `DataFrame`s to store `KERNEL` types in.
+"""
 mutable struct DataFrameSystem
     models  ::DataFrame
     chains  ::DataFrame
@@ -142,7 +179,7 @@ mutable struct DataFrameSystem
     ) = new(models, chains, residues, atoms)
 end
 
-
+##DEPRECATED
 findall(start_node::CompositeInterface,target_type::Type{T}, chain_attributes=(),
         residue_attributes=(), atom_attributes=()) where T<:CompositeInterface = begin
 

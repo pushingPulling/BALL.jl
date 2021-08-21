@@ -7,6 +7,7 @@ fragment:
 import ..CONCEPT.getName
 export Residue, isAminoAcid, isNTerminal
 
+"Represents a Residue (e.g. An Amino-Acid). See also [`CompositeInterface`](@ref)."
 mutable struct Residue <: CompositeInterface
     name_                                       ::Union{String,Nothing}
     number_of_children_                         ::Union{Int64,Nothing}
@@ -83,8 +84,10 @@ Residue(res_name::String,num_of_children::Int64, ins_code::Char, res_number::Int
 
 getName(res::Residue) = !isnothing(res.name_) ? (res.name_) : "N/A"
 
-
+"Checks if `res` is an [Amino Acid](`Amino_Acids`)"
 isAminoAcid(res::Residue) = return hasProperty(res, ("amino_acid",true) )
+
+"Checks if `res` is a [N-Terminus](https://en.wikipedia.org/wiki/N-terminus)`)"
 isNTerminal(res::Residue) = begin
     !isAminoAcid(res) && return false
     chain = res.parent_

@@ -1,9 +1,7 @@
-#=
-common:
-- Julia version: 
-- Author: Dan
-- Date: 2021-06-09
-=#
+#DEPRECATED FILE
+
+
+
 module CONCEPT
 
 

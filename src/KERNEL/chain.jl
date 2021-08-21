@@ -9,7 +9,7 @@ import ..CONCEPT.getName
 export
     Chain
 
-
+"Represents a Chain of Residues. See also [`CompositeInterface`](@ref)"
 mutable struct Chain <: CompositeInterface
     id_                                         ::Union{Char, Nothing}
     number_of_children_                         ::Union{Int64,Nothing}

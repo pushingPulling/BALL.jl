@@ -31,6 +31,9 @@ end
         TYPE__PEPTIDE           = 5
 end
 
+"""
+Represents chemical Bonds between Atoms.
+"""
 mutable struct Bond
     #CompositeInterface is used as type since we can't use class `Atom`
     #because we can't forward reference it or have circular dependencies.
@@ -67,7 +70,11 @@ Bond(at1::AtomInterface, at2::AtomInterface; name::String ="",
     Bond(at1,at2,name,order,type)
 
 
-#creates a Bond if none already exists between two atoms
+"""
+    createBond(at_owner::AtomInterface, at_guest::AtomInterface; name::String ="",
+        order::Order = ORDER__ANY, type::BondType = TYPE__UNKNOWN)
+Creates a Bond between two alredy existing Atoms.
+"""
 createBond(at_owner::AtomInterface, at_guest::AtomInterface; name::String ="",
         order::Order = ORDER__ANY, type::BondType = TYPE__UNKNOWN) = begin
     bondExists(at_owner,at_guest) && return nothing
@@ -77,11 +84,12 @@ createBond(at_owner::AtomInterface, at_guest::AtomInterface; name::String ="",
     return temp
 end
 
+"Checks if a Bond exists"
 bondExists(at1::AtomInterface, at2::AtomInterface) = begin
     return haskey(at1.bonds_,at2)
 end
 
-#deletes a bond. has no effect if a bond between the atoms was not present
+"Deletes a Bond between two `Atom`s. Has no effect if a Bond between the `Atom`s doesn't exist."
 deleteBond(at1::AtomInterface, at2::AtomInterface) = begin
     delete!(at1.bonds_, at2)
     delete!(at2.bonds_, at1)
@@ -92,11 +100,12 @@ printBonds(at::AtomInterface, io::IO = Base.stdout) = begin
     println(io,"$at has bonds to ",
      join(keys(at.bonds_),", "),". ")
 end
-
+"See [`getProperties`](@ref)"
 getProperties(comp::Bond) = begin
     return comp.properties_
 end
 
+"See [`hasProperty`](@ref)"
 hasProperty(comp::Bond, property::String) = begin
     if any([property == x[1] for x in getProperties(comp) ])
        return true
@@ -104,7 +113,7 @@ hasProperty(comp::Bond, property::String) = begin
     return false
 end
 
-
+"See [`getProperty`](@ref)"
 getProperty(comp::Bond, property::Tuple{String,UInt8}) = begin
     if hasProperty(comp,property)
         index = findfirst((x::Tuple{String,UInt8})-> property[1] == x[1], getProperties(comp))
@@ -113,6 +122,7 @@ getProperty(comp::Bond, property::Tuple{String,UInt8}) = begin
     return nothing
 end
 
+"See [`setProperty`](@ref)"
 setProperty(comp::Bond, property::Tuple{String,UInt8}) = begin
     if hasProperty(comp,property[1])
         index = findfirst((x::Tuple{String,UInt8})-> property[1] == x[1], getProperties(comp))
@@ -121,6 +131,7 @@ setProperty(comp::Bond, property::Tuple{String,UInt8}) = begin
     push!(comp.properties_, property)
 
 end
+"See [`setProperty`](@ref)"
 setProperty(comp::Bond, property::Tuple{String,Bool}) = setProperty(comp,(property[1],UInt8(property[2])))
 
 

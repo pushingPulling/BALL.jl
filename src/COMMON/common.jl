@@ -4,9 +4,7 @@ import Base.showerror
 export
     printfields, capitalize, TooManyIterationsException
 
-#this macro inherits the fields of another type
-#assume "Citizen" inherits the fields from "Person"
-#usage: @inherit Citizen Person begin     end
+
 macro inherit(name, base, fields)
     base_type = Core.eval(@__MODULE__, base)
     base_fieldnames = fieldnames(base_type)
@@ -18,21 +16,30 @@ macro inherit(name, base, fields)
     return res
 end
 
+"""
+    @printfields
+Prints names and contents of `object`'s fields.
+"""
 macro printfields(object)
     return :(for name in fieldnames(typeof($object))
         println(name," ",typeof(getfield($object,name))," ", getfield($object,name))
     end)
 end
 
+"Capitalizes a word"
 capitalize(str::String) = begin
     return string(uppercase(str[1]), lowercase(str[2:end]))
 end
 
-#--------------Exceptions----------------
+
+"""
+    TooManyIterationsException
+Exception for a routine with a limited number of Iterations.
+"""
 struct TooManyIterationsException
     max_iterations::Int64
 end
-Base.showerror(io::IO, e::TooManyIterationsException) =  print(io, "rached maximum number ($(e.max_iterations)) of iterations")
+Base.showerror(io::IO, e::TooManyIterationsException) = print(io, "rached maximum number ($(e.max_iterations)) of iterations")
 
 
 #=

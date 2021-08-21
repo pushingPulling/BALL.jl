@@ -9,6 +9,9 @@ export
     Atom, getBonds, collectBonds, setFormalCharge
 using Distances: euclidean, sqeuclidean
 
+"""
+Standard representation for an Atom (e.g. in a Molecule). See also [`CompositeInterface`](@ref).
+"""
 mutable struct Atom <: AtomInterface    #AtomInterface inherits from CompositeInterface
     parent_         ::Union{Nothing,CompositeInterface}
     previous_       ::Union{Nothing,CompositeInterface}
@@ -112,6 +115,10 @@ Atom(   atomname::String, x::Float64, y::Float64, z::Float64,
 
 getBonds(at::Atom) = at.bonds_
 
+"""
+    collectBonds(atoms::Vector{Atom})
+Collects all `Bond`s of every `Atom` in `atoms`.\n See also [`Bond`](@ref).
+"""
 collectBonds(atoms::Vector{Atom}) = begin
     bonds::Vector{Bond} = Bond[]
     for at in atoms

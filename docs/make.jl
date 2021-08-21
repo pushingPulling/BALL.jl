@@ -15,7 +15,24 @@ makedocs(;
         assets=String[],
     ),
     pages=[
-        "Home" => "index.md",
+        "BALL Documentation" => "index.md",
+        "Manual" =>
+            [
+                "Getting Started" => "start.md",
+                "Iteration" => "iteration.md",
+                "Interfaces" => "interfaces.md",
+                "Advanced Usage" => "advanced_usage.md"
+            ],
+        "Submodules" =>
+            [
+                "Concept" => "concept_page.md",
+                "Kernel" => "kernel_page.md",
+                "Fileformats" => "fileformats_page.md",
+                "Molmec" => "molmec_page.md",
+                "Structure" => "structure_page.md",
+                "QSAR" => "qsar_page.md",
+                "Miscellaneous" => "misc.md"
+            ],
     ],
 )
 
