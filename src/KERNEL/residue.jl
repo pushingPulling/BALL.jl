@@ -87,8 +87,8 @@ getName(res::Residue) = !isnothing(res.name_) ? (res.name_) : "N/A"
     isAminoAcid(res::Residue)
 Checks if `res` is an [Amino Acid](@ref ).
 """
-"Checks if `res` is an [Amino Acid](@ref )"
 isAminoAcid(res::Residue) = return hasProperty(res, ("amino_acid",true) )
+
 """
     isNTerminal(res::Residue)
 Checks if `res` is a [N-Terminus](https://en.wikipedia.org/wiki/N-terminus).
