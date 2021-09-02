@@ -74,6 +74,6 @@ const Amino_Acids = String["ALA", "CYS", "ASP", "GLU", "PHE", "GLY", "HIS", "ILE
 BALL_QSAR_RINGPERCEEPTIONPROCESSOR_RUN_COUNT = 1
 BALL_QSAR_RINGPERCEEPTIONPROCESSOR_MAX_RUNS = 20
 "A String-Vector of all available Properties. Note: Properties can be added at runtime. (Needs testing tho)"
-BALL_Properties = String["amino_acid", "InRing"]
+BALL_Properties = String["amino_acid", "InRing","fromNMR"]
 "Ball can only percieve Rings of Size 2*`BALL_HALF_OF_MAX_RING_SIZE`"
 const BALL_HALF_OF_MAX_RING_SIZE = 20		#Only detect Rings in SSSR with maximally 2*BALL_HALF_OF_MAX_RING_SIZE atoms

@@ -18,7 +18,7 @@ using Reexport
         include("./CONCEPT/composite_interface.jl")
         include("./CONCEPT/timeStamp.jl")
         include("./CONCEPT/composite.jl")
-        include("./CONCEPT/atom_interface.jl")
+        include("./CONCEPT/kernel_interfaces.jl")
     end
 
     module KERNEL
@@ -35,7 +35,10 @@ using Reexport
         include("./KERNEL/residue.jl")
         include("./KERNEL/system.jl")
         include("./KERNEL/composite_iterator.jl")
-        include("./KERNEL/aux_functions.jl") #split dataformats up
+        include("./KERNEL/dataframesystem.jl")
+        include("./KERNEL/getter_setter.jl")
+        include("./KERNEL/aux_functions.jl")
+
     end
 
     module MOLMEC
@@ -54,12 +57,13 @@ using Reexport
     end
 
     module STRUCTURE
+        using DataFrames
         using ..COMMON
         using ..CONCEPT
         using ..KERNEL
         include("./STRUCTURE/simple_molecular_graph.jl")
         include("./STRUCTURE/minimum_cycle_basis.jl")
-        include("./STRUCTURE/ring_perception.jl")
+
     end
 
     module QSAR
@@ -68,6 +72,7 @@ using Reexport
         using ..KERNEL
         using ..STRUCTURE
         include("./QSAR/add_hydrogen_processor.jl")
+        include("./QSAR/ring_perception.jl")
     end
 
     @reexport using .COMMON

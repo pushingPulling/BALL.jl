@@ -27,7 +27,7 @@ macro printfields(object)
 end
 
 "Capitalizes a word"
-capitalize(str::String) = begin
+capitalize(str::AbstractString) = begin
     return string(uppercase(str[1]), lowercase(str[2:end]))
 end
 

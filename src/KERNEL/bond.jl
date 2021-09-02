@@ -6,8 +6,8 @@ bond:
 =#
 import ..CONCEPT: getProperties, hasProperty, getProperty
 export
-    Order, BondType, Bond, createBond, bondExists, printBonds, ORDER__SINGLE, TYPE__COVALENT,
-    TYPE__HYDROGEN, TYPE__DISULPHIDE_BRIDGE, TYPE__SALT_BRIDGE
+    Order, BondType, Bond, createBond, bondExists, printBonds, deleteBond,
+    ORDER__SINGLE, TYPE__COVALENT, TYPE__HYDROGEN, TYPE__DISULPHIDE_BRIDGE, TYPE__SALT_BRIDGE
 
 import Base.show
 import BALL.CONCEPT.setProperty
@@ -151,8 +151,6 @@ end
 setProperty(comp::Bond, property::Tuple{String,Bool}) = setProperty(comp,(property[1],UInt8(property[2])))
 
 
-
-
 Base.show(io::IO, bond::Bond) = begin
     bond_order= "Unknown-order"
     bond_type = "unknown-type"
@@ -181,6 +179,6 @@ Base.show(io::IO, bond::Bond) = begin
     end
 
     print(io,
-        "$bond_order $bond_type bond: [$(bond.source_)] -> [$(bond.target_)]")
+        "$bond_order $bond_type bond: $(bond.source_) -> $(bond.target_)")
 
 end

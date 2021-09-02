@@ -13,7 +13,7 @@ A System holds multiple Chains (represents a Protein).\\
 A System holds multiple Systems (e.g. represents a System of multiple Proteins).\\
 See also [`CompositeInterface`](@ref).
 """
-mutable struct System <: CompositeInterface
+mutable struct System <: SystemInterface
     name_                                       ::Union{String,Nothing}
     number_of_children_                         ::Union{Int64,Nothing}
     parent_                                     ::Union{CompositeInterface, Nothing}

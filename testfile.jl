@@ -331,30 +331,41 @@ println(t," ", t2,"ms")
 #    println([getName(x) for x in collectAtoms(collectResidues(xd)[id])])
 #end
 
+
+#----------------------------------hist
+#=
+makehist(protein::System) =begin
+    histogram::Dict{Element, Int} = Dict{Element, Int}()
+    for at in collectAtoms(protein)
+        histogram[getElement(at)] = get(histogram, getElement(at),0) + 1
+    end
+    return histogram
+end
+=#
+
 #println( [x.serial_ for x in filter( (x) -> x.serial_ in [10,14,28,74,79] ,collectAtoms(internal_representation) )] )
 using StatProfilerHTML
 #struc = read("5ire.pdb", BioStructures.PDB)
 push!(LOAD_PATH, "G:\\Python Programme\\BALL.jl\\src\\" )
 
 using BALL
-
+using BenchmarkTools
 
 
 #include("src/QSAR/ring_perception_processor.jl")
 #include("src/QSAR/minimum_cycle_basis.jl")
 
 #internal = System("G:/Python Programme/sbl.jl/1,2-Benzodiazepine.pdb")
-internal = System("G:/Python Programme/BALL.jl/benzene.pdb")
-#println("nodes: $(length(collectAtoms(internal)))")
-#println("bonds: $(length(collectBonds(internal)))")
-
-println(internal)
-
-
-edges, atoms = SSSR(internal)
-foreach(println, edges)
-println(atoms)
+protein1 = System("G:/Python Programme/BALL.jl/1EN2.pdb")
+protein = DataFrameSystem(protein1)
+graph = MolecularGraph(protein)
+#println(breadthFirstSearch(graph, getFirstNode(graph)))
 
 
 
+#@benchmark SSSR($protein)
 
+
+
+#@code_warntype SSSR(protein)
+#include("G:/Python Programme/BALL.jl/testfile.jl")

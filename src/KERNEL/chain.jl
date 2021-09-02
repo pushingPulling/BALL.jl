@@ -10,7 +10,7 @@ export
     Chain
 
 "Represents a Chain of Residues. See also [`CompositeInterface`](@ref)"
-mutable struct Chain <: CompositeInterface
+mutable struct Chain <: ChainInterface
     id_                                         ::Union{Char, Nothing}
     number_of_children_                         ::Union{Int64,Nothing}
     parent_                                     ::Union{CompositeInterface, Nothing}
@@ -26,8 +26,10 @@ mutable struct Chain <: CompositeInterface
     modification_stamp_                         ::Union{TimeStamp,Nothing}
     trait_                                      ::Union{CompositeInterface, Nothing}
     selected_                                   ::Bool
+
     Chain() = new(nothing,nothing,nothing,nothing,nothing,nothing,nothing,Vector{Tuple{String,UInt8}}(),
                     nothing,nothing,nothing,nothing,nothing,nothing,false)
+
     Chain(   id_                                         ::Union{Char, Nothing},
              number_of_children_                         ::Union{Int64,Nothing},
              parent_                                     ::Union{CompositeInterface, Nothing},

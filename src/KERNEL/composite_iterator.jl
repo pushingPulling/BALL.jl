@@ -161,12 +161,42 @@ function Base.iterate(_ :: T, state::Tuple{Vector{T},Union{Nothing,T}}) where T 
 end
 
 Base.collect(iter::T) where T<:CompositeIterator = begin
-#=
-    stack = (iterator_to_composite[T])[]
-    for item in iter
-        push!(stack,item)
-    end
-    return stack
-    =#
     recursive_collect(iter.node, iterator_to_composite[T])
+end
+
+"""
+    collectAtoms(node::CompositeInterface)
+Collects all the `Atom`s of the subtree rooted in `node`.
+"""
+collectAtoms(node::CompositeInterface) = begin
+    recursive_collect(node,Atom)
+end
+
+
+
+"""
+    collectResidues(node::CompositeInterface)
+Collects all the `Residue`s of the subtree rooted in `node`.
+"""
+collectResidues(node::CompositeInterface) = begin
+    recursive_collect(node,Residue)
+end
+
+
+
+"""
+    collectChains(node::CompositeInterface)
+Collects all the `Chain`s of the subtree rooted in `node`.
+"""
+collectChains(node::CompositeInterface) = begin
+    recursive_collect(node,Chain)
+end
+
+
+"""
+    collectSystems(node::CompositeInterface)
+Collects all the `System`s of the subtree rooted in `node`.
+"""
+collectSystems(node::CompositeInterface) = begin
+    recursive_collect(node,System)
 end

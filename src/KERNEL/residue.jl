@@ -8,7 +8,7 @@ import ..CONCEPT.getName
 export Residue, isAminoAcid, isNTerminal
 
 "Represents a Residue (e.g. An Amino-Acid). See also [`CompositeInterface`](@ref)."
-mutable struct Residue <: CompositeInterface
+mutable struct Residue <: ResidueInterface
     name_                                       ::Union{String,Nothing}
     number_of_children_                         ::Union{Int64,Nothing}
     parent_                                     ::Union{Nothing,CompositeInterface}
@@ -111,7 +111,6 @@ end
 
 Base.show(io::IO, res::Residue) =
     print(io,
-    "Residue-\"$(getName(res.parent_))\" ($(res.is_hetero_ ? "hetero" : "non-hetero")) with ",
-    "name $(getName(res)), ",
+    "$(getName(res)), ",
     "$(countAtoms(res)) atoms"
 )

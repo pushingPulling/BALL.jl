@@ -1,4 +1,5 @@
 # Miscellaneous
+
 ## Types
 ```@autodocs
 Modules = [BALL.COMMON]

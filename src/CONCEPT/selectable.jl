@@ -1,13 +1,15 @@
-#=
-selectable:
-- Julia version: 
-- Author: Dan
-- Date: 2021-06-28
-=#
+export KernelInterface
 """
 Objects can be selected and deselected for certain operations (in the future). Supertype of [`CompositeInterface`](@ref).
 """
 abstract type Selectable end
+
+
+"""
+Interface which `KERNEL` types implement. See [`CompositeInterface`](@ref) and
+[`DataFrameSystem`](@ref) which both implement `KernelInterface`.
+"""
+abstract type KernelInterface <: Selectable end
 
 function select(x::Selectable)
     x.selected_ = true

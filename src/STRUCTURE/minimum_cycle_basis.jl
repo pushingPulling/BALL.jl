@@ -1,13 +1,12 @@
-#=
-mincycle:
-- Julia version: 
-- Author: Dan
-- Date: 2021-08-16
-=#
+
+import BALL.STRUCTURE.breadthFirstSearch
 using DataStructures
 
 export BackpointingNode
 
+"""
+A specialization of [`SimpleMolecularGraph.Node`](@ref). Adds `Edge`s pointing back to the parent.
+"""
 mutable struct BackpointingNode <: AbstractNode
     adjacent_edges_ ::Vector{Edge}
     atom_           ::Atom
@@ -15,6 +14,11 @@ mutable struct BackpointingNode <: AbstractNode
     BackpointingNode(at::Atom) = (x = new(Edge[], at); x.parent_ = x)
 end
 
+
+"""
+    collectPathToRoot(node::BackpointingNode) -> Vector{BackpointingNode}
+Collects `BackpointingNode`s from `node` to the root of the tree `node` is in.
+"""
 collectPathToRoot(node::BackpointingNode) = begin
     path::Vector{BackpointingNode} = BackpointingNode[]
     cur::BackpointingNode = node
@@ -26,26 +30,42 @@ collectPathToRoot(node::BackpointingNode) = begin
     return path
 end
 
-searchfunc(edge::Edge,node::BackpointingNode)= begin
+
+
+partnerNodePredicate(edge::Edge, node::BackpointingNode)= begin
     ( (edge.source_ == node && edge.target_ == node.parent_) ||
         (edge.target_ == node && edge.source_ == node.parent_) )
 end
 
+
+"""
+    collectBackpathEdges(path::Vector{BackpointingNode})
+Collects the `Edge`s that connect the `BackpointingNode`s in `path`.
+"""
 collectBackpathEdges(path::Vector{BackpointingNode}) = begin
     #make sure path[1] contains a node whose parent you dont care about
+
     edge_path::Vector{Edge} = Edge[]
     for node in reverse(path[1:end-1])
-        pos_in_vector = findfirst(x->searchfunc(x,node), node.adjacent_edges_)
+        pos_in_vector = findfirst(x->partnerNodePredicate(x,node), node.adjacent_edges_)
         pushfirst!(edge_path, node.adjacent_edges_[pos_in_vector])
     end
     return edge_path
 end
 
-breadthFirstSearchMCB(graph::MolecularGraph, root::Node, deep::Bool=true) = begin
+
+"""
+    breadthFirstSearchMCB(graph::MolecularGraph, root::Node, deep::Bool=true)
+A specialization of [`breadthFirstSearch`](@ref) of the [`minimum_cycle_basis`](@ref) algorithm.\n
+It uses [`backpointingNode`](@ref)s and unless `deep` is `false` it will calculate a BFS of all
+atoms in `graph`.
+"""
+breadthFirstSearchMCB(graph::MolecularGraph, root::T where T<:AbstractNode, deep::Bool=true) = begin
 #iterating over a tree of node with type Node and making a bfs with nodetype BackpointingNode
     bfs = MolecularGraph(BackpointingNode)
-    q::Queue{Node} = Queue{Node}()
-    visited_nodes::Set{Node} = Set{Node}()
+    graph_node_type = typeof(getFirstNode(graph))
+    q::Queue{graph_node_type} = Queue{graph_node_type}()
+    visited_nodes::Set{graph_node_type} = Set{graph_node_type}()
 
     #init: the root node's parent is itself
     previous_bfs_node::BackpointingNode = newNode(bfs,root.atom_, BackpointingNode)
@@ -54,8 +74,9 @@ breadthFirstSearchMCB(graph::MolecularGraph, root::Node, deep::Bool=true) = begi
     cur = root
     depth::Int64 = 0
 
+    #do while loop
     while true
-        for edge in collectPartnerEdges(cur)
+        for edge in eachPartnerEdge(cur)
             neighbour::Node = edge.source_ == cur ? edge.target_ : edge.source_
             if !(neighbour in visited_nodes)
                 push!(visited_nodes, neighbour)
@@ -76,8 +97,13 @@ breadthFirstSearchMCB(graph::MolecularGraph, root::Node, deep::Bool=true) = begi
     end
     return bfs
 end
+breadthFirstSearch(graph::MolecularGraph, root::Node, BackpointingNode) = breadthFirstSearchMCB(graph,root)
 
-
+"""
+    minimum_cycle_basis(graph::MolecularGraph)
+Finds the [Minimum Cycle Basis] of `graph` using [`Horton's Algorithm`](https://en.wikipedia.org/wiki/Cycle_basis#Polynomial_time_algorithms).
+This algorithm is only correct for undirected Graphs with edgeweight equals 1 for all edges in the graph.
+"""
 minimum_cycle_basis(graph::MolecularGraph) = begin
     num_nodes = getNumberOfNodes(graph)
     num_edges = getNumberOfEdges(graph)
@@ -86,12 +112,12 @@ minimum_cycle_basis(graph::MolecularGraph) = begin
     tested_cycles::Set{Vector{Edge}} = Set{Edge}()
 
     #optimization: by constructing one big bfs with all the nodes, we can make the setdiff and find out
-    #which are not in the bfs. Start horton's algo with these nodes, as these will be in a cycle
+    #which edges are not in the bfs. Start horton's algo with these nodes, as these will be in a cycle
     bfs = breadthFirstSearchMCB(graph, first(values(graph.atoms_to_nodes_)),true)
-    bfs_bonds =  Set([x.bond_ for x in collectEdges(bfs)])
-    graph_bonds =  Set([x.bond_ for x in collectEdges(graph)])
+    bfs_bonds =  Set([x.bond_ for x in eachEdge(bfs)])
+    graph_bonds =  Set([x.bond_ for x in eachEdge(graph)])
     nodes_with_missing_edges = [graph.atoms_to_nodes_[bond.source_] for bond in setdiff(graph_bonds, bfs_bonds)]
-    graph_nodes = filter(x->!in(x,nodes_with_missing_edges), collect(collectNodes(graph)))
+    graph_nodes = filter(x->!in(x,nodes_with_missing_edges), collect(eachNode(graph)))
     graph_nodes = vcat(nodes_with_missing_edges, graph_nodes)
     i = 1
     #for node in graph_nodes
@@ -99,8 +125,8 @@ minimum_cycle_basis(graph::MolecularGraph) = begin
         i += 1
         #only do a bfs of limited depth, as cycles can only have a limited number of atoms
         bfs = breadthFirstSearchMCB(graph, node,false)
-        bfs_bonds =  Set([x.bond_ for x in collectEdges(bfs)])
-        graph_bonds =  Set([x.bond_ for x in collectEdges(graph)])
+        bfs_bonds =  Set([x.bond_ for x in eachEdge(bfs)])
+        graph_bonds =  Set([x.bond_ for x in eachEdge(graph)])
         edges_not_in_bfs = [graph.bonds_to_edges_[x] for x in setdiff(graph_bonds, bfs_bonds)]
         #each edge that is not in the bfs will create a cycle if restored
         for edge in edges_not_in_bfs
@@ -140,7 +166,3 @@ minimum_cycle_basis(graph::MolecularGraph) = begin
     end
 end
 
-
-
-#problems: -makes a bfs for every node in the graph: insane cost
-            #-> limit to depth 20?

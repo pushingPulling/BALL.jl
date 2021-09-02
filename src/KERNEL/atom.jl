@@ -6,19 +6,19 @@ atom:
 =#
 
 export
-    Atom, getBonds, collectBonds, setFormalCharge
+    Atom, getBonds, collectBonds, setFormalCharge, getElementSymbol
 using Distances: euclidean, sqeuclidean
 
 """
 Standard representation for an Atom (e.g. in a Molecule). See also [`CompositeInterface`](@ref).
 """
 mutable struct Atom <: AtomInterface    #AtomInterface inherits from CompositeInterface
+    name_           ::Union{String,Nothing}
     parent_         ::Union{Nothing,CompositeInterface}
     previous_       ::Union{Nothing,CompositeInterface}
     next_           ::Union{Nothing,CompositeInterface}
     first_child_    ::Union{CompositeInterface, Nothing}
     last_child_     ::Union{CompositeInterface, Nothing}
-    name_           ::Union{String,Nothing}
     type_name_      ::Union{String,Nothing}
     element_        ::Union{Element,Nothing}
     radius_         ::Union{Float64,Nothing}
@@ -41,12 +41,12 @@ mutable struct Atom <: AtomInterface    #AtomInterface inherits from CompositeIn
     nothing,nothing,nothing,false,Dict{Atom, Bond}(),Vector{Tuple{String,UInt8}}())
 
 
-        Atom(   parent_         ,
+        Atom(   name_           ,
+                parent_         ,
                 previous_       ,
                 next_           ,
                 first_child_    ,
                 last_child_     ,
-                name_           ,
                 type_name_      ,
                 element_        ,
                 radius_         ,
@@ -61,12 +61,12 @@ mutable struct Atom <: AtomInterface    #AtomInterface inherits from CompositeIn
                 serial_         ,
                 temp_factor_
 
-            )   = new(parent_         ,
+            )   = new(name_           ,
+                    parent_         ,
                     previous_       ,
                     next_           ,
                     first_child_    ,
                     last_child_     ,
-                    name_           ,
                     type_name_      ,
                     element_        ,
                     radius_         ,
@@ -92,12 +92,12 @@ Atom(   atomname::String, x::Float64, y::Float64, z::Float64,
         elem::String, charge::Union{Float64,Nothing},
          occupancy::Float64,serial::Int64, temp_factor::Float64) = begin
 
-        Atom(nothing,
+        Atom(atomname,
             nothing,
             nothing,
             nothing,
             nothing,
-            atomname,
+            nothing,
             nothing,
             Element(capitalize(elem)),
             nothing,
@@ -113,26 +113,34 @@ Atom(   atomname::String, x::Float64, y::Float64, z::Float64,
             temp_factor)
     end
 
-getBonds(at::Atom) = at.bonds_
+
+
+getBonds(at::T) where T<:AtomInterface = at.bonds_
 
 """
-    collectBonds(atoms::Vector{Atom})
-Collects all `Bond`s of every `Atom` in `atoms`.\n See also [`Bond`](@ref).
+    collectBonds(node::CompositeInterface)
+Returns a `Set` of all the `Bond`s of the atoms in the subtree rooted in `node`.
 """
-collectBonds(atoms::Vector{Atom}) = begin
-    bonds::Vector{Bond} = Bond[]
-    for at in atoms
-        push!(bonds, values(getBonds(at))...)
+
+collectBonds(node::CompositeInterface) = begin
+    bonds = Set{Bond}()
+    for at in collectAtoms(node)
+        length(values(getBonds(at))) > 0 && push!(bonds, values(getBonds(at))...)
     end
-    return bonds
+    return collect(bonds)
 end
+viewBonds(node::CompositeInterface) = collectBonds(node)
 
 
-setFormalCharge(at::Atom, new_charge::Int64) = begin at.formal_charge_ = new_charge end
+"""
+    getElementSymbol(at::Atom) -> String
+Returns the Periodic Talble of Elements' symbol of the element of the atom.
+"""
+getElementSymbol(at::T) where T<:AtomInterface = at.element_.symbol_
+
+setFormalCharge(at::T, new_charge::Int64) where T<:AtomInterface = begin at.formal_charge_ = new_charge end
 
 Base.show(io::IO, at::Atom) = print(io, "Atom$(at.serial_)[",
     #"$( (isnothing(at.element_)) ? "-" : string(at.element_.symbol_) )|",
     "$( (isnothing(at.element_) || isnothing(at.element_.symbol_)) ? "-" : at.element_.symbol_)|",
     "$( (isnothing(at.parent_) || isnothing(at.parent_.name_)) ? "-" : at.parent_.name_ )]")
-
-

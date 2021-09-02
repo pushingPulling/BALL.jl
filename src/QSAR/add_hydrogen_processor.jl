@@ -5,15 +5,19 @@ add_hydrogen_processor:
 - Date: 2021-07-03
 =#
 
-
-addHydrogen(composite::CompositeInterface) = begin
-    for residue in collectResidues(composite)
+"""
+    addHydrogen(composite::CompositeInterface)
+Adds Hydrogen to a `composite`. First, the [`SSSR`](@ref) is calculated and aromaticity of the composite
+is analyzed, then Hydrogen will be added.
+"""
+addHydrogen(composite::KernelInterface) = begin
+    for residue in eachResidue(composite)
         placePeptideBondH_()
     end
 
     atom_nr::Int64 = 1
     last_atom::Atom = Atom()
-    for atom in collectAtoms(compsite)
+    for atom in eachAtom(composite)
         ring_atoms_::Set{Atom}
 
         atom_nr_ += 1

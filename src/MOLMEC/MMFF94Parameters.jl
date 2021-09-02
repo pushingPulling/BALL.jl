@@ -4,7 +4,9 @@ MMFF94Parameters:
 - Author: Dan
 - Date: 2021-07-30
 =#
-
+"""
+Radii derived from [MMFF94 Validation Suite](http://www.ccl.net/cca/data/MMFF94/).
+"""
 const MMFF94radii = Float64[
      0.33, 0.0,
 	 1.34, 0.90, 0.81, 0.77, 0.73, 0.72, 0.74, 0.0,
@@ -19,7 +21,10 @@ const MMFF94radii = Float64[
 	 1.46, 1.40, 1.41, 1.35, 1.33, 0.0
 ]
 
-constMMFF94StrechParameters = Float64[
+"""
+Stretch parameters derived from [MMFF94 Validation Suite](http://www.ccl.net/cca/data/MMFF94/).
+"""
+const MMFF94StrechParameters = Float64[
      2.20, 0.0,
 	 0.97, 1.47, 2.01, 2.5, 3.07, 3.5, 4.10, 0.0,
 	 1.01, 1.23, 1.47, 1.74, 2.06, 2.44, 2.83, 0.0,

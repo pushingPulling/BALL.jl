@@ -4,8 +4,8 @@ PTE:
 - Author: Dan
 - Date: 2021-06-03
 =#
-
-export Element
+import Base.show
+export Element, getElement
 """
 	Element
 Represents an Element. [`Atom`](@ref) holds objects of `Element`.
@@ -52,6 +52,11 @@ struct Element
 				)
 			end
 end
+
+Base.show(io::IO, el::Element) = print(io, el.symbol_)
+
+getElement(at::AtomInterface) = at.element_
+
 
 "Periodic Table of Elements"
 const elements_ = Element[

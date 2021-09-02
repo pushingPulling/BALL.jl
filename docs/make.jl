@@ -19,8 +19,8 @@ makedocs(;
         "Manual" =>
             [
                 "Getting Started" => "start.md",
-                "Iteration" => "iteration.md",
                 "Interfaces" => "interfaces.md",
+                "Iteration" => "iteration.md",
                 "Advanced Usage" => "advanced_usage.md"
             ],
         "Submodules" =>
@@ -33,6 +33,7 @@ makedocs(;
                 "QSAR" => "qsar_page.md",
                 "Miscellaneous" => "misc.md"
             ],
+        "DevDocs" => "devdocs.md"
     ],
 )
 
