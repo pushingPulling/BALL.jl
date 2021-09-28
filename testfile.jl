@@ -344,21 +344,28 @@ end
 =#
 
 #println( [x.serial_ for x in filter( (x) -> x.serial_ in [10,14,28,74,79] ,collectAtoms(internal_representation) )] )
-using StatProfilerHTML
+#-------->using StatProfilerHTML
 #struc = read("5ire.pdb", BioStructures.PDB)
 push!(LOAD_PATH, "G:\\Python Programme\\BALL.jl\\src\\" )
 
 using BALL
-using BenchmarkTools
+#using BenchmarkTools
 
 
 #include("src/QSAR/ring_perception_processor.jl")
 #include("src/QSAR/minimum_cycle_basis.jl")
 
 #internal = System("G:/Python Programme/sbl.jl/1,2-Benzodiazepine.pdb")
-protein1 = System("G:/Python Programme/BALL.jl/1EN2.pdb")
-protein = DataFrameSystem(protein1)
-graph = MolecularGraph(protein)
+#profilehtml
+
+
+prot = System("cubane.pdb")
+println(collectBonds(prot))
+sssr = SSSR(prot)
+println(length(sssr[1]))
+println(sssr[2])
+
+#graph = MolecularGraph(protein1)
 #println(breadthFirstSearch(graph, getFirstNode(graph)))
 
 

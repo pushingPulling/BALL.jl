@@ -105,8 +105,8 @@ Finds the [Minimum Cycle Basis] of `graph` using [`Horton's Algorithm`](https://
 This algorithm is only correct for undirected Graphs with edgeweight equals 1 for all edges in the graph.
 """
 minimum_cycle_basis(graph::MolecularGraph) = begin
-    num_nodes = getNumberOfNodes(graph)
-    num_edges = getNumberOfEdges(graph)
+    num_nodes = countNodes(graph)
+    num_edges = countEdges(graph)
 
     mcb::Vector{Vector{Edge}} = Vector{Edge}[]
     tested_cycles::Set{Vector{Edge}} = Set{Edge}()
@@ -133,6 +133,7 @@ minimum_cycle_basis(graph::MolecularGraph) = begin
             #create cycles and put them into mcb or prune them
             #let `edge` = (w,x). Make the cycle: Path(w to node) + Path(x to node) + (w,x)
             #but only if node is the lowest common ancestor of w,x
+
             w::BackpointingNode = bfs.atoms_to_nodes_[edge.source_.atom_]
             x::BackpointingNode = bfs.atoms_to_nodes_[edge.target_.atom_]
             w_nodes = collectPathToRoot(w)

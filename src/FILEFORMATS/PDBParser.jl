@@ -1,55 +1,82 @@
 
 import ..KERNEL.System
 
+"Save information needed to identify a SSBond"
+struct SSBond    #Tuple of chain_id and residue_number
+    chain_id::Char
+    res_num::Int64
+end
+
+"Packages the parsed fields from a conect line in a struct to avoid allocations"
+mutable struct ConectLineParams
+    bonding_atoms::Vector{Int}
+    tokens::Vector{String}
+
+end
+
+"Packages the parsed fields from an atom line in a struct to avoid allocations"
+mutable struct AtomLineParams
+    name::String
+    x::Float64
+    y::Float64
+    z::Float64
+    elem::String
+    occupancy::Union{Float64,Nothing}
+    temp_factor::Union{Float64,Nothing}
+    charge::Union{Float64,Nothing}
+    serial::Int64
+
+    AtomLineParams() = new()
+end
 
 """
     parseConectLine(line::String)
 Parses a line starting with "CONNECT" in a PDB file.
 """
-parseConectLine(line::String) = begin
-    bonding_atoms::Vector{Int} = Int[ parse(Int,strip(line[7:11])) ]
-    len_line::Int = length(line)
+parseConectLine(params::ConectLineParams, line::String) = begin
+
     if length(line) == 16
-        tokens::Vector{String} = String[line[12:16]]
+        push!(params.tokens, line[12:16])
     elseif length(line) == 21
-        tokens = String[line[12:16], line[17:21]]
+       push!(params.tokens, line[12:16], line[17:21])
     elseif length(line) == 26
-        tokens = String[line[12:16], line[17:21],
-                line[22:26]]
+        push!(params.tokens, line[12:16], line[17:21],
+                line[22:26])
     else
-        tokens = String[line[12:16], line[17:21],
-                line[22:26], line[27:31]]
+        push!(params.tokens, line[12:16], line[17:21],
+                line[22:26], line[27:31])
     end
 
-    for x in tokens
+    for x in params.tokens
         if strip(x) != ""
-            push!(bonding_atoms, parse(Int,strip(x)))
+            push!(params.bonding_atoms, parse(Int,strip(x)))
         end
     end
-    return bonding_atoms
+    return params
 end
 
 """
     parseAtomLine(line::String)
 Parses a line starting with "ATOM" or "HET" in a PDB file.
 """
-parseAtomLine(line::String,serial::Int64) = begin
+parseAtomLine(params::AtomLineParams, line::String) = begin
 
-    name::String = strip(line[13:16])
-    x::Float64 = parse(Float64,line[31:38])
-    y::Float64 = parse(Float64,line[39:46])
-    z::Float64 = parse(Float64,line[47:54])
-    elem::String = strip(line[77:78])
-    occupancy::Union{Float64,Nothing} = strip(line[55:60]) == "" ? nothing : parse(Float64,line[55:60])
-    temp_factor::Union{Float64,Nothing} = strip(line[61:66]) == "" ? nothing : parse(Float64,line[61:66])
+    params.name = strip(line[13:16])
+    params.x = parse(Float64,line[31:38])
+    params.y = parse(Float64,line[39:46])
+    params.z = parse(Float64,line[47:54])
+    params.elem = strip(line[77:78])
+    params.occupancy = strip(line[55:60]) == "" ? nothing : parse(Float64,line[55:60])
+    params.temp_factor = strip(line[61:66]) == "" ? nothing : parse(Float64,line[61:66])
 
     if length(line) >= 80
-        charge::Union{Float64,Nothing} = strip(line[79:80]) == "" ? nothing : parse(Float64,line[79:80])
+        params.charge = strip(line[79:80]) == "" ? nothing : parse(Float64,line[79:80])
     else
-        charge = nothing
+        params.charge = nothing
     end
 
-    result = Atom(name,x,y,z,elem,charge,occupancy,serial,temp_factor)
+    result = Atom(params.name,params.x,params.y,params.z,params.elem,params.charge,
+                    params.occupancy,params.serial,params.temp_factor)::Atom
     if startswith(line,"HET")
         setProperty(result,("hetero",true))
     end
@@ -58,15 +85,13 @@ parseAtomLine(line::String,serial::Int64) = begin
 end
 
 
-SSBond = Tuple{Char,Int64}    #Tuple of chain_id and residue_number
-
 """
     compare_ssbonds(b1::SSBond, b2::SSBond)
 Comparison function for sorting.
 """
 compare_ssbonds(b1::SSBond, b2::SSBond) = begin
-    b1[1] < b2[1] && return true
-    b1[1] == b2[1] && b1[2] < b2[2] && return true
+    b1.chain_id < b2.chain_id && return true
+    b1.chain_id == b2.chain_id && b1.res_num < b2.res_num && return true
     return false
 end
 
@@ -76,95 +101,13 @@ end
 Parses a line starting with "SSOBND" ina PDB file.
 """
 parseSSBondLine(line::String) = begin
-    ssbond1::SSBond = (line[16], parse(Int,strip(line[18:21])))
-    ssbond2::SSBond = (line[30] ,parse(Int,strip(line[32:35])))
+    ssbond1::SSBond = SSBond(line[16], parse(Int,strip(line[18:21])))
+    ssbond2::SSBond = SSBond(line[30] ,parse(Int,strip(line[32:35])))
     return (ssbond1, ssbond2)
 end #returns 2 ssbonds
 #only use following Function to build a System initially
 
-"""
-    PDBparseBonds(internal_representation::CompositeInterface, path::String)
-#DEPRECATED# Parse Bonds in a PDB file. Since BioStructures is not used anymore, this function is pointless.
-"""
-PDBparseBonds(internal_representation::CompositeInterface, path::String) = begin
-    #parse bonds from PDB file. Reads only "CONECT" and "SSBOND" entries
-    #this is a complimentary function to BioStructures parser, which does not parse bonds
 
-
-    add_amino_acid_properties_to_residues(internal_representation::CompositeInterface) = begin
-        residues = collectResidues(internal_representation)
-        for res in residues
-            if getName(res) in Amino_Acids
-                setProperty(res, ("amino_acid",true))
-            end
-        end
-    end
-
-
-    # `ssbonds` holds all the ssbonds in order of appearance in the file
-    ssbonds = Vector{SSBond}()
-
-    # When reading the atoms from the file, relate the atom to an SSBond endpoint
-    ssbonds_to_atoms = Dict{SSBond, Int64}() #mapping ssbonds to atom serial number
-
-    #List of pairs of atoms bonded by a SSBond
-    ssbond_pairs = Vector{Tuple{SSBond,SSBond}}()
-
-    atoms_vec = collectAtoms(internal_representation)
-    atoms = Dict{Int64, Atom}(at.serial_ => at for at in atoms_vec)
-
-    seen_ssbonds = false
-    current_ssbond_index::Int = 1
-
-
-    open(path) do file
-        for line in eachline(file)
-            if startswith(line, "SSBOND")
-                pair::Tuple{Int,Int} = parseSSBondLine(line)
-                push!(ssbond_pairs, pair)
-                push!(ssbonds, pair...)
-                seen_ssbonds = true
-            end
-
-            if seen_ssbonds && !startswith(line,"SSBOND")
-                sort!(ssbonds, alg=InsertionSort, lt = compare_ssbonds)
-                seen_ssbonds = false
-            end
-
-            if (current_ssbond_index <= length(ssbonds)) && startswith(line,"ATOM")
-                #find items from SSBOND
-                current_ssbond = ssbonds[current_ssbond_index]
-                #replace "SG" with a list of possible names of atoms which engage in ssbonds
-                if ( (line[22], parse(Int,strip(line[23:26]))) == current_ssbond ) && (strip(line[13:16]) == "SG")
-
-                    ssbonds_to_atoms[current_ssbond] = parse(Int64,strip(line[7:11]))
-                    current_ssbond_index += 1
-
-                end
-            end
-
-            if startswith(line, "CONECT")
-                bonding_atom_serials = parseConectLine(line)
-                for serial in bonding_atom_serials[2:end]
-                    createBond(atoms[bonding_atom_serials[1]], atoms[serial],
-                                order=ORDER__SINGLE, type=TYPE__COVALENT)
-                end
-            end
-        end
-    end
-
-    #for each ssbond pair, make a bond betwen the two corresponding atoms using the dict
-    for (ssbond1, ssbond2) in ssbond_pairs
-        deleteBond(atoms[ssbonds_to_atoms[ssbond1]], atoms[ssbonds_to_atoms[ssbond2]])
-        createBond(atoms[ssbonds_to_atoms[ssbond1]], atoms[ssbonds_to_atoms[ssbond2]],
-                                order=ORDER__SINGLE, type=TYPE__DISULPHIDE_BRIDGE)
-    end
-
-    add_amino_acid_properties_to_residues(internal_representation)
-    #Assign Element to each Atom
-
-    return internal_representation
-end
 
 """
     adjust_ter_indices(indices::Vector{Int64}, ter_pos::Vector{Int64})
@@ -184,6 +127,8 @@ adjust_ter_indices(indices::Vector{Int64}, ter_pos::Vector{Int64}) = begin
     return indices
 end
 adjust_ter_indices(x::Int64, ter_pos::Vector{Int64}) = adjust_ter_indices([x],ter_pos)
+
+
 
 """
     parsePDB(path::String)
@@ -223,6 +168,16 @@ parsePDB(path::String) = begin
     seen_atoms::Bool = false
     seen_model::Bool = false
 
+    #init fields for parsing a "CONECT" line
+    conect_line_params::ConectLineParams = ConectLineParams(Int[],String[])
+
+    #init fields for parsing a "ATOM" line
+    atom_line_params::AtomLineParams = AtomLineParams()
+
+    record_residue_name::String = ""
+
+
+
     open(path) do file
         for line in eachline(file)
             #header
@@ -261,7 +216,7 @@ parsePDB(path::String) = begin
                 #find items from SSBOND
                 current_ssbond = ssbonds[current_ssbond_index]
                 #replace "SG" with a list of possible names of atoms which engage in ssbonds
-                if ( (line[22], parse(Int,strip(line[23:26]))) == current_ssbond )
+                if line[22] == current_ssbond.chain_id && current_ssbond.res_num ==  parse(Int,strip(line[23:26]))
                     ssbonds_to_atoms[current_ssbond] = adjust_ter_indices(parse(Int64,strip(line[7:11])), ter_positions)[1]
                     current_ssbond_index += 1
                 end
@@ -321,8 +276,9 @@ parsePDB(path::String) = begin
 
                 end
                #create atoms
+                atom_line_params.serial = atom_counter
 
-                parsed_atom = parseAtomLine(line, atom_counter)
+                parsed_atom::Atom = parseAtomLine(atom_line_params, line)
                 appendChild(latest_residue, parsed_atom)
             end
 
@@ -337,7 +293,9 @@ parsePDB(path::String) = begin
                     appendChild(root, target_system)
                 end
 
-                bonding_atom_serials = parseConectLine(line)
+                empty!(conect_line_params.bonding_atoms)
+                empty!(conect_line_params.tokens)
+                bonding_atom_serials = parseConectLine(conect_line_params, line).bonding_atoms
                 bonding_atom_serials = adjust_ter_indices(bonding_atom_serials, ter_positions)
                 for serial in bonding_atom_serials[2:end]
                     createBond(atoms[bonding_atom_serials[1]], atoms[serial],

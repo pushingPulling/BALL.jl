@@ -1,10 +1,12 @@
-
 import Base.==
+using DataFrames
+
 export
     Edge, Node, MolecularGraph, AbstractMolGraph, AbstractNode, getNumberOfEdges, getNumberOfNodes,
     deleteNode, newNode, collectPartnerEdges, deleteEdge, newEdge, collectPartnerNodes,
-    breadthFirstSearch, collectNodes, collectEdges, getFirstNode, getFirstEdge, eachPartnerEdge,
-    eachPartnerNode, eachNode, eachEdge
+    breadthFirstSearch, collectNodes, collectEdges, eachEdge, eachNode
+
+const DFR = DataFrameRow
 
 """
 Interface which defines some getters, setters and constructors in conjunction
@@ -17,32 +19,29 @@ Interface for graphs which describe some topology of biological systems.
 """
 abstract type AbstractMolGraph end
 
-const DFR = DataFrameRow
 
 """
 Type to represent Edges in [`MolecularGraph`](@ref).
 """
-mutable struct Edge{NodeType<:Union{AbstractNode, DFR}, BondType<:Union{Bond,DFR}}
-    source_ ::NodeType
-    target_ ::NodeType
-    bond_   ::BondType
-    Edge(source::AbstractNode, target::AbstractNode, bond::Bond) = new{AbstractNode,Bond}( source, target, bond )
-    Edge(source::DFR, target::DFR, bond::DFR) = new{DFR,DFR}( source, target, bond )
+mutable struct Edge
+    source_ ::Union{AbstractNode, DFR}
+    target_ ::Union{AbstractNode, DFR}
+    bond_   ::Union{Bond, DFR}
+    Edge(source::Union{AbstractNode, DFR}, target::Union{AbstractNode, DFR},
+            bond::Union{Bond, DFR}) = new(source, target, bond)
 end
-Base.show(io::IO, edge::Edge) = print(io, "E[$(getSource(edge)) | $(getTarget(edge))]")
+Base.show(io::IO, edge::Edge) = print(io, "E[$(edge.source_) | $(edge.target_)]")
 (==)(x::Edge, y::Edge) = return (x === y || x.bond_ == y.bond_)
-
 
 """
 Type to represent Nodes in [`MolecularGraph`](@ref).
 """
-mutable struct Node{NodeType<:Union{AbstractNode, DFR}, AtomType<:Union{Atom, DFR}, BondType<:Union{Bond, DFR}} <: AbstractNode
-    adjacent_edges_ ::Vector{Edge{NodeType,BondType}}
-    atom_           ::AtomType
-    Node(at::Atom) = new{Node,Atom, Bond}( Edge{Node, Bond}[], at )
-    Node(dfr::DFR) = new{DFR, DFR, DFR}( Edge{DFR, DFR}[], dfr )
+mutable struct Node <: AbstractNode
+    adjacent_edges_ ::Vector{Edge}
+    atom_           ::Union{Atom, DFR}
+    Node(at::Union{Atom, DFR}) = new(Edge[], at)
 end
-Base.show(io::IO, node::AbstractNode) = print(io, "N[$(getSerial(node.atom_))]")
+Base.show(io::IO, node::AbstractNode) = print(io, "N[$(node.atom_.serial_)]")
 
 
 #atoms_to_nodes_ relates atoms to nodes in this Graph and bodns_to_edges_ bonds to edges
@@ -51,45 +50,42 @@ Base.show(io::IO, node::AbstractNode) = print(io, "N[$(getSerial(node.atom_))]")
 Implements [`AbstractMolGraph`](@ref). Uses `Dicts` to manage the [`Node`](@ref)s
  and [`Edge`](@ref)s in it.
 """
-mutable struct MolecularGraph{      AtomType<:Union{DFR, AtomInterface},
-                                    EdgeType<:Union{AbstractNode, DFR},
-                                    BondType<:Union{Bond,DFR},
-                                    NodeType<:AbstractNode} <: AbstractMolGraph
-    atoms_to_nodes_::Dict{AtomType,NodeType}
-    bonds_to_edges_::Dict{BondType, Edge{EdgeType, AtomType}}
+mutable struct MolecularGraph <: AbstractMolGraph
 
-    MolecularGraphComposite() = new{AtomInterface, AbstractNode, Bond,AbstractNode}(Dict{T,AbstractNode}(), Dict{BondType, Edge{EdgeType, AtomType}}())
-    MolecularGraphDFR() = new{DFR,DFR,DFR,Node}( Dict{DFR,Node}(), Dict{DFR,Edge{DFR,DFR}} )
-    MolecularGraph( AtomType::Union{Type{DFR}, Type{AtomInterface}},
-                    EdgeType::Union{Type{AbstractNode}, Type{DFR}},
-                    BondType::Union{Type{Bond}, Type{DFR}},
-                    NodeType::Type{typ} = Node) where typ<:AbstractNode = new{AtomType,EdgeType,BondType,NodeType}(
-                        Dict{AtomType,NodeType}(), Dict{BondType, Edge{EdgeType, AtomType}}()
-                )
+    atoms_to_nodes_::Dict{Union{Atom, DFR},AbstractNode}
+    bonds_to_edges_::Dict{Union{Bond, DFR},Edge}
+    MolecularGraph() = new(Dict{Union{Atom, DFR},AbstractNode}(), Dict{Union{Bond, DFR},Edge}())
     MolecularGraph(NodeType::Type{typ}) where typ<:AbstractNode =
-                            new{AtomInterface,AbstractNode,Bond,NodeType}( Dict{T,NodeType}(), Dict{BondType, Edge{EdgeType, AtomType}}() )
+                            new(Dict{Union{Atom, DFR},NodeType}(), Dict{Union{Bond, DFR},Edge}())
 
 end
 
 
-
+"""
+    getFirstNode(graph::MolecularGraph)
+Returns the first Node in `graph`.
+"""
 getFirstNode(graph::MolecularGraph) = begin
     return first(values(graph.atoms_to_nodes_))
 end
 
+"""
+    getFirstNode(graph::MolecularGraph)
+Returns the first Edge in `graph`.
+"""
 getFirstEdge(graph::MolecularGraph) = begin
     return first(values(graph.bonds_to_edges_))
 end
 
 
 """
-    eachNode(graph::MolecularGraph)
+    collectNodes(graph::MolecularGraph)
 Returns a Dict-Values iterator over the nodes in the graph.
 """
-eachNode(graph::MolecularGraph) = begin
+collectNodes(graph::MolecularGraph) = begin
     return values(graph.atoms_to_nodes_)
 end
-collectNodes(graph::MolecularGraph) = eachNodes(graph)
+
 
 """
     eachPartnerNode(node::AbstractNode)
@@ -98,7 +94,6 @@ Gets all the nodes, which are connected to `node` via edges.
 eachPartnerNode(node::AbstractNode) = begin
     return [x.source_ == node ? x.target_ : x.source_ for x in values(node.adjacent_edges_)]
 end
-collectPartnerNodes(node::AbstractNode) = eachPartnerNode(node)
 
 """
     eachPartnerEdge(node::AbstractNode)
@@ -107,7 +102,6 @@ Returns a Dict-Values iterator over the edges adjacent to `node`.
 eachPartnerEdge(node::AbstractNode) = begin
     return values(node.adjacent_edges_)
 end
-collectPartnerEdges(node::AbstractNode) = collectPartnerEdges(node)
 
 """
     eachEdge(graph::MolecularGraph)
@@ -116,10 +110,19 @@ Returns a Dict-Values iterator over the edges in `graph`.
 eachEdge(graph::MolecularGraph) = begin
     return values(graph.bonds_to_edges_)
 end
-collectEdges(graph::MolecularGraph) = collectEdges(graph)
+
 
 """
-    getNumberOfNodes(graph::MolecularGraph)
+    eachNode(graph::MolecularGraph)
+Returns a Dict-Values iterator over the nodes in `graph`.
+"""
+eachNode(graph::MolecularGraph) = begin
+    return values(graph.atoms_to_nodes_)
+end
+
+
+"""
+    countNodes(graph::MolecularGraph)
 Returns the number of Nodes in `graph`.
 """
 countNodes(graph::MolecularGraph) = begin
@@ -128,7 +131,7 @@ end
 
 
 """
-    getNumberOfEdges(graph::MolecularGraph)
+    countEdges(graph::MolecularGraph)
 Returns the number of Nodes in `graph`.
 """
 countEdges(graph::MolecularGraph) = begin
@@ -140,27 +143,11 @@ end
     newNode(graph::MolecularGraph, at::Atom, NodeType::Type{typ} = Node) where typ<:AbstractNode
 Creates and inserts a node of type `typ`, carrying `at` into `graph`.
 """
-newNode(graph::MolecularGraph, at::Atom, NodeType::Type{typ} = Node) where typ<:AbstractNode = begin
+newNode(graph::MolecularGraph, at::Union{Atom,DFR}, NodeType::Type{typ} = Node) where typ<:AbstractNode = begin
     if haskey(graph.atoms_to_nodes_, at)
         return false
     end
     temp::NodeType = NodeType(at)
-    graph.atoms_to_nodes_[at] = temp
-    return temp
-end
-
-
-"""
-    newNode(graph::MolecularGraph, at::DataFrameRow, NodeType::Type{typ} = Node) where typ<:AbstractNode
-Creates and inserts a node of type `typ`, carrying `at` into `graph`.
-"""
-newNode(graph::MolecularGraph, at::DataFrameRow, NodeType::Type{typ} = Node) where typ<:AbstractNode = begin
-
-    println(graph.atoms_to_nodes_," len")
-    if haskey(graph.atoms_to_nodes_, at)
-        return false
-    end
-    temp = NodeType(at)
     graph.atoms_to_nodes_[at] = temp
     return temp
 end
@@ -196,7 +183,7 @@ end
 Creates an edge connecting the two `Node`s that represents the atoms that `bond` connects.
 Has no effect if the respective nodes do not exist.
 """
-newEdge(graph::MolecularGraph, bond::Union{Bond,DataFrameRow}) = begin
+newEdge(graph::MolecularGraph, bond::Bond) = begin
     if haskey(graph.bonds_to_edges_, bond)
         return false
     end
@@ -217,12 +204,8 @@ end
 Constructs a `MolecularGraph` mirroring the structure of the tree rooted in `root`.
 The nodes will be of type `typ`.
 """
-MolecularGraph(root::KernelInterface,
-                AtomType::Union{Type{DFR}, Type{AtomInterface}},
-                EdgeType::Union{Type{AbstractNode}, Type{DFR}},
-                BondType::Union{Type{Bond}, Type{DFR}},
-                NodeType::Type{typ} = Node) where typ<:AbstractNode = begin
-    graph = MolecularGraph(AtomType,EdgeType,BondType,NodeType)#empty graph
+MolecularGraph(root::KernelInterface, NodeType::Type{typ} = Node) where typ<:AbstractNode = begin
+    graph = MolecularGraph(NodeType)
     for at in eachAtom(root)
         newNode(graph, at)
     end
@@ -233,9 +216,11 @@ MolecularGraph(root::KernelInterface,
     return graph
 end
 
-MolecularGraph(root::CompositeInterface) = MolecularGraph(root,Atom,Node,Bond)
-
-MolecularGraph(dfs::DataFrameSystem) = MolecularGraph(dfs,DataFrameRow,DataFrameRow ,DataFrameRow)
+"""
+    MolecularGraph(dfs::DataFrameSystem) = MolecularGraph(dfs.systems[1,:system],
+        NodeType::Type{typ} = Node) where typ<:AbstractNode where T<:Union{System, Chain, Residue}
+Gets the first `System` in `dfs` and constructs a Graph from it.
+"""
 
 
 """
@@ -243,16 +228,16 @@ MolecularGraph(dfs::DataFrameSystem) = MolecularGraph(dfs,DataFrameRow,DataFrame
 Generic BFS algorithm, that returns the BFS of `graph` rooted in `root`. The resulting
 graph will have nodes of type `typ`.
 """
-breadthFirstSearch(graph::MolecularGraph, root::T where T<:AbstractNode, NodeType::Type{typ} = Node) where typ<:AbstractNode = begin
+breadthFirstSearch(graph::MolecularGraph, root::Node, NodeType::Type{typ} = Node) where typ<:AbstractNode = begin
     bfs = MolecularGraph(NodeType)
     q::Queue{NodeType} = Queue{NodeType}()
     visited_nodes::Set{NodeType} = Set{NodeType}()
     cur::NodeType = root
-    newNode(bfs, root.atom_, NodeType)
+    newNode(bfs,root.atom_, NodeType)
     push!(visited_nodes, root)
     cur = root
     while true
-        for edge in eachPartnerEdge(cur)
+        for edge in collectPartnerEdges(cur)
             neighbour::Node = edge.source_ == cur ? edge.target_ : edge.source_
             if !(neighbour in visited_nodes)
                 push!(visited_nodes, neighbour)

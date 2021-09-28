@@ -1,7 +1,8 @@
 import Base: show, <, >, ==, findall
 export DataFrameSystem, countAtoms, countResidues, countChains,countSystems, collectAtoms,
     collectResidues, collectChains, collectBonds, findfirst, findall, collectSystems, countBonds,
-    viewSystems, viewChains, viewResidues, viewAtoms, eachAtom, eachResidue, eachChain, eachSystem
+    viewSystems, viewChains, viewResidues, viewAtoms, eachAtom, eachResidue, eachChain, eachSystem,
+    eachBond
 
 
 
@@ -22,6 +23,14 @@ end
 Returns the number of `Bond`s in the `DataFrameSystem`.
 """
 countBonds(dfs::DataFrameSystem) = length(dfs.bonds)
+
+"""
+    eachBond(::DataFrameSystem)
+Returns an iterator of all bonds in the `DataFrameSystem`.
+"""
+eachBond(dfs::DataFrameSystem) = eachrow(dfs.bonds)
+
+eachBond(comp::CompositeInterface) = collectBonds(comp)
 
 
 
