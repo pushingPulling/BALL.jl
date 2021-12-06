@@ -38,8 +38,18 @@ using Reexport
         include("./KERNEL/dataframesystem.jl")
         include("./KERNEL/getter_setter.jl")
         include("./KERNEL/aux_functions.jl")
-
     end
+
+    module SPATIAL
+        using ..COMMON
+        using ..CONCEPT
+        using ..KERNEL
+        using StaticArrays
+        using DataFrames
+        using LinearAlgebra
+        include("./SPATIAL/spatial.jl")
+    end
+
 
     module MOLMEC
         using ..COMMON
@@ -82,6 +92,7 @@ using Reexport
     @reexport using .FILEFORMATS
     @reexport using .STRUCTURE
     @reexport using .QSAR
-    export COMMON, CONCEPT, KERNEL, MOLMEC, FILEFORMATS, STRUCTURE, QSAR
+    @reexport using .SPATIAL
+    export COMMON, CONCEPT, KERNEL, MOLMEC, FILEFORMATS, STRUCTURE, QSAR, SPATIAL
 
 end

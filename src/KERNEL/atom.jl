@@ -6,7 +6,7 @@ atom:
 =#
 
 export
-    Atom, getBonds, collectBonds, setFormalCharge, getElementSymbol
+    Atom, getBonds, collectBonds, setFormalCharge, getElementSymbol, coords
 using Distances: euclidean, sqeuclidean
 
 """
@@ -121,6 +121,13 @@ getBonds(at::T) where T<:AtomInterface = at.bonds_
     collectBonds(node::CompositeInterface)
 Returns a `Set` of all the `Bond`s of the atoms in the subtree rooted in `node`.
 """
+
+"""
+    coords(at::Atom)
+Resturns a `SVector` with the Atoms coordinates.
+"""
+coords(at::Atom) = at.position_
+
 
 collectBonds(node::CompositeInterface) = begin
     bonds = Set{Bond}()

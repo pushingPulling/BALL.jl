@@ -1,9 +1,50 @@
 import Base: show, <, >, ==, findall
+import ..CONCEPT: appendSibling
 export DataFrameSystem, countAtoms, countResidues, countChains,countSystems, collectAtoms,
     collectResidues, collectChains, collectBonds, findfirst, findall, collectSystems, countBonds,
     viewSystems, viewChains, viewResidues, viewAtoms, eachAtom, eachResidue, eachChain, eachSystem,
-    eachBond
+    eachBond, sequentialResidues, is_atom_dfr, is_residue_dfr, is_chain_dfr, is_system_dfr,
+    is_atom_df, is_residue_df, is_chain_df, is_system_df
 
+
+const DFR = DataFrameRow
+
+# because a dataframerow from a dataframes/subdataframes has the same column indices, these functions
+# work on any AbstractDataFrame
+
+is_atom_dfr(df::DataFrameRow) = begin
+    return length(getfield(df, :colindex)) == 18  #atom df has 18 columns
+end
+
+is_residue_dfr(df::DataFrameRow) = begin
+    return length(getfield(df, :colindex)) == 17  #res df has 17 columns
+end
+
+is_chain_dfr(df::DataFrameRow) = begin
+    return first(propertynames(df)) == :id_
+end
+
+is_system_dfr(df::DataFrameRow) = begin
+    return !is_chain_dfr(df) && length(getfield(df, :colindex)) == 13
+end
+
+is_atom_df(df::AbstractDataFrame) = begin
+    return length(getfield(df, :colindex)) == 18  #atom df has 18 columns
+end
+
+#---
+
+is_residue_df(df::AbstractDataFrame) = begin
+    return length(getfield(df, :colindex)) == 17  #res df has 17 columns
+end
+
+is_chain_df(df::AbstractDataFrame) = begin
+    return first(propertynames(df)) == :id_
+end
+
+is_system_df(df::AbstractDataFrame) = begin
+    return !is_chain_df(df) && length(getfield(df, :colindex)) == 13
+end
 
 
 """
@@ -22,7 +63,7 @@ end
     countBonds(dfs::DataFrameSystem)
 Returns the number of `Bond`s in the `DataFrameSystem`.
 """
-countBonds(dfs::DataFrameSystem) = length(dfs.bonds)
+countBonds(dfs::DataFrameSystem) = nrow(dfs.bonds)
 
 """
     eachBond(::DataFrameSystem)
@@ -46,7 +87,7 @@ end
     countAtoms(dfs::DataFrameSystem)
 Returns the number of `Atom`s in the `DataFrameSystem`.
 """
-countAtoms(dfs::DataFrameSystem) = length(dfs.atoms)
+countAtoms(dfs::DataFrameSystem) = nrow(dfs.atoms)
 
 
 """
@@ -61,7 +102,7 @@ end
     countResidues(dfs::DataFrameSystem)
 Returns the number of `Residue`s in the `DataFrameSystem`.
 """
-countResidues(dfs::DataFrameSystem) = length(dfs.residues)
+countResidues(dfs::DataFrameSystem) = nrow(dfs.residues)
 
 
 """
@@ -76,7 +117,7 @@ end
     countChains(dfs::DataFrameSystem)
 Returns the number of `Chain`s in the `DataFrameSystem`.
 """
-countChains(dfs::DataFrameSystem) = length(dfs.chains)
+countChains(dfs::DataFrameSystem) = nrow(dfs.chains)
 
 
 """
@@ -91,17 +132,118 @@ end
     countSystems(dfs::DataFrameSystem)
 Returns the number of `System`s in the `DataFrameSystem`.
 """
-countSystems(dfs::DataFrameSystem) = length(dfs.systems)
+countSystems(dfs::DataFrameSystem) = nrow(dfs.systems)
 
 
 
 
 """
     collectAtoms(dfs::DataFrameSystem) -> Vector{Atom}
-Collects (copies) all the atoms in a `DataFrameSystem`.
+Collects (copies of) all the atoms in a `DataFrameSystem`.
 """
 collectAtoms(dfs::DataFrameSystem) = begin
-    return dfs[:,:atoms]
+    return dfs.atoms
+end
+
+collectAtoms(dfr::DataFrameRow) = begin
+
+end
+
+
+eachAtom(df::AbstractDataFrame) = begin
+    atoms = DataFrameRow[]
+
+    if is_residue_df(df)
+        for row in eachrow(df)
+            push!(atoms, getChildren(row)...)
+        end
+        return atoms
+    end
+
+    if is_chain_df(df)
+        for chain in eachrow(df)
+            for res in getChildren(chain)
+                push!(atoms, getChildren(res)...)
+            end
+        end
+        return atoms
+    end
+
+
+    if is_system_df(df)
+        for system in eachrow(df)
+            for chain in getChildren(system)
+                for res in getChildren(chain)
+                    push!(atoms, getChildren(res)...)
+                end
+            end
+        end
+        return atoms
+    end
+end
+
+eachResidue(df::AbstractDataFrame) = begin
+    residues = DataFrameRow[]
+
+    if is_chain_df(df)
+        for chain in eachrow(df)
+            push!(residues, getChildren(chain)...)
+        end
+        return residues
+    end
+
+
+    if is_system_df(df)
+        for system in eachrow(df)
+            for chain in getChildren(system)
+                push!(residues, getChildren(chain)...)
+            end
+        end
+        return residues
+    end
+end
+
+eachChain(df::AbstractDataFrame) = begin
+    chains = DataFrameRow[]
+    if is_system_df(df)
+        for system in eachrow(df)
+            push!(chains, getChildren(system)...)
+        end
+        return chains
+    end
+end
+
+eachAtom(dfr::DataFrameRow) = begin
+    if is_system_dfr(dfr)
+        temp_chains = getChildren(dfr)
+        temp_residues = DataFrameRow[]
+        for chain in temp_chains
+            push!(temp_residues, getChildren(chain)...)
+        end
+        atoms = DataFrameRow[]
+        for child in temp_residues
+            push!(atoms, getChildren(child)...)
+        end
+
+        return atoms
+    end
+
+    if is_chain_dfr(dfr)
+        temp_residues = getChildren(dfr)
+        atoms = DataFrameRow[]
+        for child in temp_residues
+            push!(atoms, getChildren(child)...)
+        end
+
+        return atoms
+    end
+
+    # if residue row get all children of row
+    if is_residue_dfr(dfr)
+        return getChildren(dfr)
+    end
+
+    return []
 end
 
 """
@@ -127,7 +269,7 @@ end
 Collects all the residues in a `DataFrameSystem`.
 """
 collectResidues(dfs::DataFrameSystem) = begin
-    return dfs[:,:residue]
+    return dfs.residues
 end
 
 
@@ -170,7 +312,7 @@ end
 Collects all the chains in a `DataFrameSystem`.
 """
 collectChains(dfs::DataFrameSystem) = begin
-    return dfs[:,:chain]
+    return dfs.chains
 end
 
 """
@@ -205,7 +347,7 @@ end
 Collects all the systems in a `DataFrameSystem`.
 """
 collectSystems(dfs::DataFrameSystem) = begin
-    return dfs[:,:system]
+    return dfs.systems
 end
 
 
@@ -330,6 +472,7 @@ import Base.getindex
 Base.getindex(x::CompositeInterface,sy::Core.Symbol) = Base.getfield(x,sy)
 Base.getindex(x::Bond, sy::Core.Symbol) = Base.getfield(x,sy)
 Base.getindex(x::System, i::Int) = collectChains(x)[i]
+Base.getindex(x::System, c::Char) = Base.getindex(x, Int(c- 'A') + 1)
 Base.getindex(x::Residue, i::Int) = collectResidues(x)[i]
 Base.getindex(x::Chain, i::Int) = collectAtoms(x)[i]
 """
@@ -406,3 +549,15 @@ findall(start_node::CompositeInterface,target_type::Type{T}, chain_attributes=()
 
 end
 
+
+
+
+"""
+    sequentialResidues(res::Union{DFR,ResidueInterface}, res_next::Union{DFR,ResidueInterface})
+Returns true if `res` comes before `res_next` in the same Chain and if both are hetero/non-hetero residues.
+"""
+sequentialResidues(res::Union{DFR,ResidueInterface}, res_next::Union{DFR,ResidueInterface}) = begin
+    return getParent(res) == getParent(res_next) &&
+            isHetero(res) == isHetero(res_next) &&
+            getNext(res) == res_next
+end

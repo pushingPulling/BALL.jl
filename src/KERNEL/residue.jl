@@ -4,8 +4,8 @@ fragment:
 - Author: Dan
 - Date: 2021-06-01
 =#
-import ..CONCEPT.getName
-export Residue, isAminoAcid, isNTerminal
+import .CONCEPT.getName
+export Residue, isAminoAcid, isNTerminal, isHetero
 
 "Represents a Residue (e.g. An Amino-Acid). See also [`CompositeInterface`](@ref)."
 mutable struct Residue <: ResidueInterface
@@ -114,3 +114,5 @@ Base.show(io::IO, res::Residue) =
     "$(getName(res)), ",
     "$(countAtoms(res)) atoms"
 )
+
+isHetero(res::Residue) = res.is_hetero_

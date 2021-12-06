@@ -59,7 +59,8 @@ mutable struct MolecularGraph <: AbstractMolGraph
                             new(Dict{Union{Atom, DFR},NodeType}(), Dict{Union{Bond, DFR},Edge}())
 
 end
-
+Base.show(io::IO, gr::MolecularGraph) =
+    print(io, "$(length(gr.atoms_to_nodes_)) nodes, $(length(gr.bonds_to_edges_)) edges")
 
 """
     getFirstNode(graph::MolecularGraph)
@@ -183,19 +184,19 @@ end
 Creates an edge connecting the two `Node`s that represents the atoms that `bond` connects.
 Has no effect if the respective nodes do not exist.
 """
-newEdge(graph::MolecularGraph, bond::Bond) = begin
+newEdge(graph::MolecularGraph, bond::Union{Bond, DFR}) = begin
     if haskey(graph.bonds_to_edges_, bond)
         return false
     end
 
-    if !haskey(graph.atoms_to_nodes_, bond.source_) || !haskey(graph.atoms_to_nodes_, bond.target_)
+    if !haskey(graph.atoms_to_nodes_, getSource(bond)) || !haskey(graph.atoms_to_nodes_, getTarget(bond))
         return false
     end
 
-    temp = Edge(graph.atoms_to_nodes_[bond.source_], graph.atoms_to_nodes_[bond.target_], bond)
+    temp = Edge(graph.atoms_to_nodes_[getSource(bond)], graph.atoms_to_nodes_[getTarget(bond)], bond)
     graph.bonds_to_edges_[bond] = temp
-    push!(graph.atoms_to_nodes_[bond.source_].adjacent_edges_, temp)
-    push!(graph.atoms_to_nodes_[bond.target_].adjacent_edges_, temp)
+    push!(graph.atoms_to_nodes_[getSource(bond)].adjacent_edges_, temp)
+    push!(graph.atoms_to_nodes_[getTarget(bond)].adjacent_edges_, temp)
 end
 
 

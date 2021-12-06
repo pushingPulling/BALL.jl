@@ -47,38 +47,42 @@ mutable struct Bond
         properties_                  ::Vector{Tuple{String,UInt8}}
 
 
-        Bond(x::CompositeInterface, y::CompositeInterface, name::String, bond_order::Order, bond_type::BondType) = begin
+        Bond(x::CompositeInterface, y::CompositeInterface, name::String, bond_order::Order,
+                bond_type::BondType, properties::Vector{Tuple{String,UInt8}}) = begin
             throw(ErrorException("Bonds are only allowed between Atoms. Input: $x , $y."))
         end
 
-        Bond(x::AtomInterface, y::AtomInterface, name::String, bond_order::Order, bond_type::BondType) = begin
+        Bond(x::T, y::T, name::String, bond_order::Order,
+                bond_type::BondType,
+                properties::Vector{Tuple{String,UInt8}}) where T<: AtomInterface = begin
             if x == y
                 throw(ErrorException("Bonds between the same Atom are disallowed. Input: $x , $y."))
             end
             if x.serial_ > y.serial_
-                temp = x
-                x = y
-                y = temp
+                x, y = y, x
             end
-            new(x,y,name,bond_order,bond_type,Vector{Tuple{String,Int8}}())
+            new(x,y,name,bond_order,bond_type,properties)
         end
 end
 
 
-Bond(at1::AtomInterface, at2::AtomInterface; name::String ="",
-        order::Order = ORDER__ANY, type::BondType = TYPE__UNKNOWN) =
-    Bond(at1,at2,name,order,type)
+Bond(at1::AtomInterface, at2::AtomInterface;
+        name::String ="",
+        order::Order = ORDER__ANY, type::BondType = TYPE__UNKNOWN,
+        properties::Vector{Tuple{String,UInt8}} = Tuple{String,UInt8}[]) =
+   Bond(at1,at2,name,order,type, properties)
 
 
 """
     createBond(at_owner::AtomInterface, at_guest::AtomInterface; name::String ="",
-        order::Order = ORDER__ANY, type::BondType = TYPE__UNKNOWN)
-Creates a Bond between two alredy existing Atoms. See `Order` and `BondType` in Bond.jl.
+        order::Order = ORDER__ANY, type::BondType = TYPE__UNKNOWN, properties::Vector{Tuple{String,UInt8}})
+Creates a Bond between two already existing Atoms. See `Order` and `BondType` in Bond.jl.
 """
 createBond(at_owner::AtomInterface, at_guest::AtomInterface; name::String ="",
-        order::Order = ORDER__ANY, type::BondType = TYPE__UNKNOWN) = begin
+        order::Order = ORDER__ANY, type::BondType = TYPE__UNKNOWN,
+         properties::Vector{Tuple{String,UInt8}} = Tuple{String,UInt8}[]) = begin
     bondExists(at_owner,at_guest) && return nothing
-    temp = Bond(at_owner, at_guest, name = name, order = order, type = type)
+    temp = Bond(at_owner, at_guest, name = name, order = order, type = type, properties = properties)
     at_owner.bonds_[at_guest] = temp
     at_guest.bonds_[at_owner] = temp
     return temp

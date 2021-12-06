@@ -112,7 +112,7 @@ removeChild(root::T, child_node::S) where{T,S <: CompositeInterface} = begin
         else
             root.last_child_ = nothing
         end
-        root.number_of_children_ -= (!isnothing(countDescendants(new_node)) ? countDescendants(new_node) : 0)
+        root.number_of_children_ -= (!isnothing(countDescendants(child_node)) ? countDescendants(child_node) : 0)
 
         root.child.next_ = nothing
     else
@@ -120,7 +120,7 @@ removeChild(root::T, child_node::S) where{T,S <: CompositeInterface} = begin
             root.last_child_ = child_node.previous_
             root.last_child_.next_ = child_node.previous_ = nothing
         else
-            println(root, child_node)
+            #println(root, child_node)
             child_node.previous_.next_ = child_node.next_
 
             child_node.next_.previous_ = child_node.previous_
@@ -248,6 +248,9 @@ appendChild(old_node::T, new_node::S) where {T,S <: CompositeInterface} = begin
 
 end
 
+appendChild(::Nothing, ::S) where S<:CompositeInterface = nothing
+appendChild(::S, ::Nothing) where S<:CompositeInterface = nothing
+
 """
    isSibling(comp::CompositeInterface, other::CompositeInterface)
 Returns `true` if `other` and `comp are siblings`, else `false`
@@ -267,16 +270,21 @@ See also [`prependSibling`](@ref).
 """
 appendSibling(comp::T, other::T) where T<:CompositeInterface = begin
     isSibling(comp, other) && return
-    temp = comp.next_
-    comp.next_ = other
-    other.previous_ = comp
-    other.next_ = temp
+    cur::T = comp
+    while !isnothing(cur.next_)
+         cur = cur.next_
+    end
+    cur.next_ = other
+    other.previous_ = cur
     other.parent_ = comp.parent_
 
     if !isnothing(comp.parent_)
-        comp.parent_ += contDescendants(other)
+        comp.parent_.number_of_children_ += countDescendants(other)
     end
 end
+
+appendSibling(::Nothing, ::S) where S<:CompositeInterface = nothing
+appendSibling(::S, ::Nothing) where S<:CompositeInterface = nothing
 
 """
     prependSibling(comp::T, other::T) where T<:CompositeInterface
@@ -285,14 +293,16 @@ See also [`appendSibling`](@ref).
 """
 prependSibling(comp::T, other::T) where T<:CompositeInterface = begin
     isSibling(comp, other) && return
-    temp = comp.previous_
-    comp.previous_ = other
-    other.previous_ = temp
-    other.next_ = comp
+    cur::T = comp
+    while !isnothing(cur.previous_)
+         cur = cur.previous_
+    end
+    cur.prev_ = other
+    other.next_ = cur
     other.parent_ = comp.parent_
 
     if !isnothing(comp.parent_)
-        comp.parent_ += contDescendants(other)
+        comp.parent_.number_of_children_ += countDescendants(other)
     end
 end
 

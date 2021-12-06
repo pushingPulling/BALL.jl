@@ -1,6 +1,8 @@
 
 import ..KERNEL.System
 
+
+
 "Save information needed to identify a SSBond"
 struct SSBond    #Tuple of chain_id and residue_number
     chain_id::Char
@@ -207,7 +209,6 @@ parsePDB(path::String) = begin
                 seen_ssbonds = true
                 ready_to_sort_ssbonds = false
                 sort!(ssbonds, alg=InsertionSort, lt = compare_ssbonds)
-                #println("quick test:", issorted([x.res_number_ for x in residues]))
             end
 
             #atoms of name "SG" belong to ssbonds. associate atom to ssbond entry
@@ -229,7 +230,7 @@ parsePDB(path::String) = begin
                 if !seen_model
                     nothing
                 else
-                    #finalize target_system and put it append it to system
+                    #finalize target_system and append it to system
                     appendChild(root, target_system)
                     target_system = System()
                     latest_chain = Chain()
@@ -243,6 +244,7 @@ parsePDB(path::String) = begin
 
                     appendChild(target_system, latest_chain)
                     appendChild(latest_chain, latest_residue)
+                    atom_counter = 0
                 end
                 seen_model = true
             end
@@ -277,8 +279,12 @@ parsePDB(path::String) = begin
                 end
                #create atoms
                 atom_line_params.serial = atom_counter
-
                 parsed_atom::Atom = parseAtomLine(atom_line_params, line)
+                #the only property right now can be the hetero property
+                if length(parsed_atom.properties_) != 0
+                    latest_residue.is_hetero_ = true
+                end
+
                 appendChild(latest_residue, parsed_atom)
             end
 
@@ -324,8 +330,17 @@ parsePDB(path::String) = begin
 
     if !seen_model
         target_system.name_ = root.name_
-        for (i, chain) in enumerate(collectChains(target_system))
-            chain.id_ = 'A'+(i-1)
+        i = 1
+        for chain in collectChains(target_system)
+            if chain.id_ < 'A'+(i-1)
+                idx = Int(chain.id_) - Int('A') +1
+                ch_l = collectChains(target_system)[idx]
+                appendSibling(ch_l.last_child_, chain.first_child_)
+                removeChild(chain)
+            else
+                chain.id_ = 'A'+(i-1)
+                i += 1
+            end
         end
 
         return target_system
@@ -333,9 +348,34 @@ parsePDB(path::String) = begin
         setProperty(root,("fromNMR",true))
         for (num,system) in enumerate(collectSystems(root)[2:end])
             system.name_ = root.name_*"-"*string(num)
-            for (i, chain) in enumerate(collectChains(system))
-                chain.id_ = 'A'+(i-1)
+            i = 1
+            for chain in collectChains(target_system)
+                if chain.id_ < 'A'+(i-1)
+                    idx = Int(chain.id_) - Int('A') +1
+                    ch_l = collectChains(target_system)[idx]
+                    appendSibling(ch_l.last_child_, chain.first_child_)
+                    removeChild(chain)
+                else
+                    chain.id_ = 'A'+(i-1)
+                    i += 1
+                end
             end
+        end
+
+        #copy bonds over
+        last_sys = last(getChildren(root))
+        last_sys_bonds = collectBonds(last_sys)
+        atom_serials_pairs::Vector{Tuple{Int64, Int64}} = [(bond.source_.serial_, bond.target_.serial_)
+                                                        for bond in last_sys_bonds]
+
+        for sys in getChildren(root)
+            atoms = collectAtoms(sys)
+            for bond in last_sys_bonds
+                createBond(atoms[bond.source_.serial_], atoms[bond.target_.serial_],
+                            name = bond.name_, order = bond.bond_order_, type = bond.bond_type_,
+                            properties = bond.properties_)
+            end
+
         end
         return root
     end
