@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/c/Users/Dan/pdb-benchmarks/ESBTL/parse_pdb.cc
+ESBTL/default.h
+-
+iostream
+-
+time.h
+-
+

@@ -1,0 +1,24 @@
+
+push!(LOAD_PATH, "/mnt/g/Python Programme/BALL.jl/src" )
+using BALL
+using BenchmarkTools
+using StaticArrays
+pdb_filepath = "1ake.pdb"
+
+comp = System(pdb_filepath)
+dfs = DataFrameSystem(comp)
+
+comp2 = System(pdb_filepath)
+for x in AtomIterator(comp2)
+	setPosition(x,
+    ector{3,Float64}(x[1]/sqrt(3),x[2]/sqrt(3),x[3]/sqrt(3))
+end
+
+
+rmsd(comp, comp2)
+
+elapsed = @elapsed rmsd(comp,comp2)
+
+println(elapsed)
+@show @benchmark rmsd(comp,comp2)
+
