@@ -6,7 +6,7 @@ add_hydrogen_processor:
 =#
 
 """
-    addHydrogen(composite::CompositeInterface)
+    addHydrogen(composite::AbstractComposite)
 Adds Hydrogen to a `composite`. First, the [`SSSR`](@ref) is calculated and aromaticity of the composite
 is analyzed, then Hydrogen will be added.
 """

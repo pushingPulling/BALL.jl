@@ -55,7 +55,7 @@ end
 
 Base.show(io::IO, el::Element) = print(io, el.symbol_)
 
-getElement(at::AtomInterface) = at.element_
+getElement(at::AbstractAtom) = at.element_
 
 
 "Periodic Table of Elements"

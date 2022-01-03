@@ -1,12 +1,12 @@
 export KernelInterface
 """
-Objects can be selected and deselected for certain operations (in the future). Supertype of [`CompositeInterface`](@ref).
+Objects can be selected and deselected for certain operations (in the future). Supertype of [`AbstractComposite`](@ref).
 """
 abstract type Selectable end
 
 
 """
-Interface which `KERNEL` types implement. See [`CompositeInterface`](@ref) and
+Interface which `KERNEL` types implement. See [`AbstractComposite`](@ref) and
 [`DataFrameSystem`](@ref) which both implement `KernelInterface`.
 """
 abstract type KernelInterface <: Selectable end
