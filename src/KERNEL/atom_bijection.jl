@@ -30,7 +30,7 @@ end
 """
 Maps atoms in `A` to atoms of equal name in `B`.
 """
-function assignByName(A::T,  B::S, limit_to_selection::Bool) where {T,S<:AtomInterface}
+function assignByName(A::T,  B::S, limit_to_selection::Bool) where {T,S<:AbstractAtom}
     result = AtomBijection()
     A_names = Dict{String, Atom}([(atom.name_, atom) for atom in collectAtoms(A) ])
     for atom in collectAtoms(B)
@@ -47,7 +47,7 @@ end
     assignCAlphaAtoms(A::Composite,  B::Composite, ::Bool)
 Maps C-alpha atoms in `A` to C-alpha atoms in `B`.
 """
-function assignCAlphaAtoms(A::CompositeInterface,  B::CompositeInterface, limit_to_selection::Bool) where {T,S<:AtomInterface}
+function assignCAlphaAtoms(A::AbstractComposite,  B::AbstractComposite, limit_to_selection::Bool) where {T,S<:AbstractAtom}
     result = AtomBijection()
     res_list_A= collectResidues(A)
     res_list_B= collectResidues(B)
@@ -66,7 +66,7 @@ end
     assignBackboneAtoms(A::Composite, B::Composite, limit_to_selection::Bool)
 Maps the backbone atoms in `A` to the backbone atoms in `B`.
 """
-assignBackboneAtoms(A::CompositeInterface, B::CompositeInterface, limit_to_selection::Bool) where {T,S<:AtomInterface} = begin
+assignBackboneAtoms(A::AbstractComposite, B::AbstractComposite, limit_to_selection::Bool) where {T,S<:AbstractAtom} = begin
     result = AtomBijection()
     res_list_A= collectResidues(A)
     res_list_B= collectResidues(B)
