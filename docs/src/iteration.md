@@ -6,7 +6,7 @@ The preferred way to iterate over objects in the composite tree is via the funct
  * [`collectChains`](@ref)(`node`)    to collect Chains     in the subtree rooted in `node`
  * [`collectResidues`](@ref)(`node`) to collect Residues in the subtree rooted in `node`
  * [`collectSysten`](@ref)(`node`)    to collect Systems   in the subtree rooted in `node`
- * [collect](@ref collect(node::CompositeInterface))(`node`)                  to collect all nodes  in the subtree rooted in `node`
+ * [collect](@ref collect(node::AbstractComposite))(`node`)                  to collect all nodes  in the subtree rooted in `node`
  
  [`collectBonds`](@ref)(`node`) collects all the bonds in the subtree rooted in `node`
  

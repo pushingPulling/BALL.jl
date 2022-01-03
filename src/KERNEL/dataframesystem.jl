@@ -1,5 +1,5 @@
 export DataFrameSystem, getSource, getTarget, getFirstChild, getLastChild, getTrait
-import .CONCEPT: getChildren, getParent
+import .CONCEPT: getChildren, getParent, setProperty
 import .KERNEL: coords, isHetero, collectAtoms
 import Base: length, getindex, ==, show
 
@@ -73,7 +73,7 @@ const atom_types = [
     Union{UInt8,Nothing},                   #type_
     Union{UInt8,Nothing},                   #number_of_bonds_
     Union{Int64,Nothing},                   #formal_charge_
-    Union{SVector{3,Float64},Nothing},      #position_
+    SVector{3,Float64},      #position_
     Union{Float64,Nothing},                 #charge_
     Union{SVector{3,Float64},Nothing},      #velocity_
     Union{SVector{3,Float64},Nothing},      #force_
@@ -108,7 +108,7 @@ const residue_names = [#17
 
 
 const residue_types = [
-    Union{String,Nothing},                  #name_
+    String,                  #name_
     Union{Int64,Nothing},                   #number_of_children_
     Union{Base.RefValue{DataFrameRow{DataFrame, DataFrames.Index}}, Nothing},            #parent_
     Union{Base.RefValue{DataFrameRow{DataFrame, DataFrames.Index}}, Nothing},            #first_child_
@@ -247,7 +247,7 @@ end
 
 
 
-insert_systems_into_dfs(input_sys::SystemInterface, systems_df::DataFrame) = begin
+insert_systems_into_dfs(input_sys::AbstractSystem, systems_df::DataFrame) = begin
     @inbounds for sys in collectSystems(input_sys)
         push!(systems_df,  ( sys[:name_], sys[:number_of_children_], nothing, nothing,
                                     sys[:properties_], sys[:contains_selection_],
@@ -262,7 +262,7 @@ insert_systems_into_dfs(input_sys::SystemInterface, systems_df::DataFrame) = beg
 end
 
 
-insert_chains_into_dfs(systems_df::DataFrame, chains_df::DataFrame, input_sys::SystemInterface) = begin
+insert_chains_into_dfs(systems_df::DataFrame, chains_df::DataFrame, input_sys::AbstractSystem) = begin
     #insert chains into DFS and set the correct references to parents, children etc.
     @inbounds for (sys_df_row, comp_sys) in zip(eachrow(systems_df), collectSystems(input_sys))
         for chain in getChildren(comp_sys)::Vector{Chain}
@@ -288,7 +288,7 @@ insert_chains_into_dfs(systems_df::DataFrame, chains_df::DataFrame, input_sys::S
     end
 end
 
-insert_residues_into_dfs(chains_df::DataFrame, residues_df::DataFrame, input_sys::SystemInterface) = begin
+insert_residues_into_dfs(chains_df::DataFrame, residues_df::DataFrame, input_sys::AbstractSystem) = begin
     @inbounds for (chain_df_row, comp_chain) in zip(eachrow(chains_df), collectChains(input_sys))
         for residue in getChildren(comp_chain)::Vector{Residue}
             push!(residues_df,  ( residue[:name_], residue[:number_of_children_], Ref(chain_df_row),
@@ -316,7 +316,7 @@ insert_residues_into_dfs(chains_df::DataFrame, residues_df::DataFrame, input_sys
     end
 end
 
-insert_atoms_into_dfs(residues_df::DataFrame, atoms_df::DataFrame, input_sys::SystemInterface) = begin
+insert_atoms_into_dfs(residues_df::DataFrame, atoms_df::DataFrame, input_sys::AbstractSystem) = begin
     @inbounds for (res_df_row, comp_res) in zip(eachrow(residues_df), collectResidues(input_sys))
         for atom in getChildren(comp_res)::Vector{Atom}
             push!(atoms_df,  ( atom[:name_], Ref(res_df_row), atom[:type_name_],
@@ -341,7 +341,7 @@ insert_atoms_into_dfs(residues_df::DataFrame, atoms_df::DataFrame, input_sys::Sy
     end
 end
 
-insert_bonds_into_dfs(atoms_df::DataFrame, bonds_df::DataFrame, input_sys::SystemInterface) = begin
+insert_bonds_into_dfs(atoms_df::DataFrame, bonds_df::DataFrame, input_sys::AbstractSystem) = begin
     for comp_bond in viewBonds(input_sys)
         source_atom_serial::Int64 = comp_bond.source_.serial_
         target_atom_serial::Int64 = comp_bond.target_.serial_
@@ -367,7 +367,7 @@ end
 Constructs a [`DataFrameSystem`](@ref) out of a System. The `DataFrames` will have the same fields
 and types as the objects in the tree of composites rooted in `input_sys`.
 """
-DataFrameSystem(input_sys::T where T<:SystemInterface,
+DataFrameSystem(input_sys::T where T<:AbstractSystem,
     atom_names::Vector{Symbol},     atom_types::Vector{Type},
     residue_names::Vector{Symbol},  residue_types::Vector{Type},
     chain_names::Vector{Symbol},    chain_types::Vector{Type},
@@ -393,7 +393,7 @@ DataFrameSystem(input_sys::T where T<:SystemInterface,
     return DataFrameSystem(systems_df, chains_df, residues_df, atoms_df, bonds_df)
 end
 
-DataFrameSystem(input_sys::T where T<:SystemInterface) = begin
+DataFrameSystem(input_sys::T where T<:AbstractSystem) = begin
     #temp::Vector{Type} = bond_types
     dfs::DataFrameSystem = DataFrameSystem(input_sys,
                                             atom_names,     atom_types,
@@ -441,6 +441,25 @@ getLastChild(dfr::DataFrameRow) = isnothing(dfr[:last_child_]) ? nothing : dfr[:
 getTrait(dfr::DataFrameRow) = isnothing(dfr[:trait_]) ? nothing : dfr[:trait_][]
 
 isHetero(dfr::DataFrameRow) = dfr.is_hetero_
+
+setProperty(dfr::DataFrameRow, property::Tuple{String,UInt8}) = begin
+    push!(dfr[:properties_], property)
+end
+
+hasProperty(dfr::DataFrameRow, property::Tuple{String,UInt8}) = begin
+    return property in dfr[:properties_]
+end
+
+hasProperty(dfr::DataFrameRow, property::String) = begin
+    for prop in dfr[:properties_]
+        if prop[1] == property
+            return true
+        end
+    return false
+    end
+end
+
+setProperty(dfr::DataFrameRow, property::Tuple{String,Bool}) = setProperty(dfr,(property[1],UInt8(property[2])))
 
 #= thanks to refs i can ignore this
 (==)(df1::DataFrame, df2::DataFrame)= begin

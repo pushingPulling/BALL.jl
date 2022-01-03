@@ -1,6 +1,6 @@
 
 export
-    CompositeInterface, isDescendantOf, countDescendants, removeChild, getParent,
+    AbstractComposite, isDescendantOf, countDescendants, removeChild, getParent,
     getChildren, appendChild, isSibling, appendSibling, prependSibling, hasProperty,
     recursive_collect, clearSelectionTree, countChildren, getProperties,
     getProperty, setProperty, getName, recursive_count, removeComposite,
@@ -13,7 +13,7 @@ An Interface which implements functions for tree traversal, exploration, manipul
 Implements getters and setters. Also implements functions to collect objects from the tree.\n
 See also [`System`](@ref), [`Chain`](@ref), [`Residue`](@ref), [`Atom`](@ref).
 """
-abstract type CompositeInterface <: KernelInterface end
+abstract type AbstractComposite <: KernelInterface end
 
 
 #=  Preorder, Neutral-Left-Right iterator
@@ -21,12 +21,12 @@ abstract type CompositeInterface <: KernelInterface end
     then DFS-like right subtree)
 =#
 """
-    Base.iterate(::CompositeInterface)
+    Base.iterate(::AbstractComposite)
 Iterates over the tree rooted in `c` in [Pre-order](https://en.wikipedia.org/wiki/Tree_traversal#Pre-order,_NLR).
 Use [`recursive_collect`](@ref) as `Base.iterate` is slower.
 """
-Base.iterate(c :: CompositeInterface) = (c, CompositeInterface[c])
-function Base.iterate(_ :: CompositeInterface, stack :: Vector{CompositeInterface})
+Base.iterate(c :: AbstractComposite) = (c, AbstractComposite[c])
+function Base.iterate(_ :: AbstractComposite, stack :: Vector{AbstractComposite})
     cp = last(stack)
     if cp.first_child_ !== nothing
         return (cp.first_child_, push!(stack, cp.first_child_))
@@ -53,15 +53,15 @@ function Base.iterate(_ :: CompositeInterface, stack :: Vector{CompositeInterfac
 end
 
 
-Base.length(C::CompositeInterface) = countDescendants(C)
-Base.eltype(::CompositeInterface) = CompositeInterface
+Base.length(C::AbstractComposite) = countDescendants(C)
+Base.eltype(::AbstractComposite) = AbstractComposite
 
 """
-    isDescendantOf(this::T, other::S) where {T,S <: CompositeInterface}
+    isDescendantOf(this::T, other::S) where {T,S <: AbstractComposite}
 Checks if `other` is a descendant of `this`.
 """
-isDescendantOf(this::T, other::S) where {T,S <: CompositeInterface} = begin
-    cur::CompositeInterface = this
+isDescendantOf(this::T, other::S) where {T,S <: AbstractComposite} = begin
+    cur::AbstractComposite = this
     while !isnothing(cur.parent_)
         cur = cur.parent_
         (cur == other) && return true
@@ -70,10 +70,10 @@ isDescendantOf(this::T, other::S) where {T,S <: CompositeInterface} = begin
 end
 
 """
-    countDescendants(node::Type) where {Type <: CompositeInterface}
+    countDescendants(node::Type) where {Type <: AbstractComposite}
 Counts the numbers of descendants of `node`.
 """
-countDescendants(node::Type) where {Type <: CompositeInterface} = begin
+countDescendants(node::Type) where {Type <: AbstractComposite} = begin
     number_of_descendants::Int64 = 1
     if isnothing(node.first_child_)
         return 1
@@ -89,10 +89,10 @@ countDescendants(node::Type) where {Type <: CompositeInterface} = begin
 end
 
 """
-    removeChild(root::T, child_node::S) where{T,S <: CompositeInterface}
+    removeChild(root::T, child_node::S) where{T,S <: AbstractComposite}
 Removes `child_node` from `root`. Return `false` if `child_node` is not `root`'s child.
 """
-removeChild(root::T, child_node::S) where{T,S <: CompositeInterface} = begin
+removeChild(root::T, child_node::S) where{T,S <: AbstractComposite} = begin
     # avoid self-removal and removal of ancestors
     if root == child_node || isDescendantOf(root, child_node)
         return false
@@ -156,31 +156,31 @@ removeChild(root::T, child_node::S) where{T,S <: CompositeInterface} = begin
 end
 
 """
-    removeChild(child::T) where T<:CompositeInterface
+    removeChild(child::T) where T<:AbstractComposite
 Removes `child_node` from `root`. Return `false` if `child_node` is not `root`'s child.
 """
-removeChild(child::T) where T<:CompositeInterface = removeChild(child.parent_, child)
+removeChild(child::T) where T<:AbstractComposite = removeChild(child.parent_, child)
 
 """
-    removeComposite(comp::T) where T<:CompositeInterface
+    removeComposite(comp::T) where T<:AbstractComposite
 Removes `child_node` from `root`. Return `false` if `child_node` is not `root`'s child.
 """
-removeComposite(comp::T) where T<:CompositeInterface = removeChild(comp.parent_, comp)
+removeComposite(comp::T) where T<:AbstractComposite = removeChild(comp.parent_, comp)
 
 
 """
-    getParent(node::CompositeInterface)
+    getParent(node::AbstractComposite)
 Gets `node`'s parent. Can return `nothing`.
 """
-getParent(node::CompositeInterface) = begin
+getParent(node::AbstractComposite) = begin
     return node.parent_
 end
 
 """
-    getChildren(node::T) where T <: CompositeInterface
+    getChildren(node::T) where T <: AbstractComposite
 Gets `node`'s immediate children.
 """
-getChildren(node::T) where T <: CompositeInterface = begin
+getChildren(node::T) where T <: AbstractComposite = begin
 
     if node.first_child_ !== nothing
         cur = node.first_child_
@@ -196,12 +196,12 @@ getChildren(node::T) where T <: CompositeInterface = begin
 end
 
 """
-    appendChild(old_node::T, new_node::S) where {T,S <: CompositeInterface}
+    appendChild(old_node::T, new_node::S) where {T,S <: AbstractComposite}
 Appends `new_node` to `old_node`. Returns `nothing` if not possible and removes `old_node`'s previous
 parent if needed.\n
 See also [`removeChild`](@ref).
 """
-appendChild(old_node::T, new_node::S) where {T,S <: CompositeInterface} = begin
+appendChild(old_node::T, new_node::S) where {T,S <: AbstractComposite} = begin
     #avoid self-appending and appending of parent nodes
     if old_node == new_node || isDescendantOf(new_node, old_node)
        return nothing
@@ -248,14 +248,14 @@ appendChild(old_node::T, new_node::S) where {T,S <: CompositeInterface} = begin
 
 end
 
-appendChild(::Nothing, ::S) where S<:CompositeInterface = nothing
-appendChild(::S, ::Nothing) where S<:CompositeInterface = nothing
+appendChild(::Nothing, ::S) where S<:AbstractComposite = nothing
+appendChild(::S, ::Nothing) where S<:AbstractComposite = nothing
 
 """
-   isSibling(comp::CompositeInterface, other::CompositeInterface)
+   isSibling(comp::AbstractComposite, other::AbstractComposite)
 Returns `true` if `other` and `comp are siblings`, else `false`
 """
-isSibling(comp::CompositeInterface, other::CompositeInterface) = begin
+isSibling(comp::AbstractComposite, other::AbstractComposite) = begin
     if !isnothing(comp.parent_)
         return (other in getChildren(comp.parent_))
     else
@@ -264,11 +264,11 @@ isSibling(comp::CompositeInterface, other::CompositeInterface) = begin
 end
 
 """
-    appendSibling(comp::T, other::T) where T<:CompositeInterface
+    appendSibling(comp::T, other::T) where T<:AbstractComposite
 Inserts `other` after `comp` in the list of Siblings.\n
 See also [`prependSibling`](@ref).
 """
-appendSibling(comp::T, other::T) where T<:CompositeInterface = begin
+appendSibling(comp::T, other::T) where T<:AbstractComposite = begin
     isSibling(comp, other) && return
     cur::T = comp
     while !isnothing(cur.next_)
@@ -283,15 +283,15 @@ appendSibling(comp::T, other::T) where T<:CompositeInterface = begin
     end
 end
 
-appendSibling(::Nothing, ::S) where S<:CompositeInterface = nothing
-appendSibling(::S, ::Nothing) where S<:CompositeInterface = nothing
+appendSibling(::Nothing, ::S) where S<:AbstractComposite = nothing
+appendSibling(::S, ::Nothing) where S<:AbstractComposite = nothing
 
 """
-    prependSibling(comp::T, other::T) where T<:CompositeInterface
+    prependSibling(comp::T, other::T) where T<:AbstractComposite
 Inserts `other` before `comp` in the list of Siblings. \n
 See also [`appendSibling`](@ref).
 """
-prependSibling(comp::T, other::T) where T<:CompositeInterface = begin
+prependSibling(comp::T, other::T) where T<:AbstractComposite = begin
     isSibling(comp, other) && return
     cur::T = comp
     while !isnothing(cur.previous_)
@@ -306,7 +306,7 @@ prependSibling(comp::T, other::T) where T<:CompositeInterface = begin
     end
 end
 
-countDescendants_iterate(node::Type) where {Type <: CompositeInterface} = begin
+countDescendants_iterate(node::Type) where {Type <: AbstractComposite} = begin
     number_of_descendants::Int64 = 0
     for descendants in node
         number_of_descendants += 1
@@ -315,14 +315,14 @@ countDescendants_iterate(node::Type) where {Type <: CompositeInterface} = begin
 end
 
 """
-    recursive_count(node::Type1, collectType::Type{Type2} where {Type1, Type2 <: CompositeInterface}
+    recursive_count(node::Type1, collectType::Type{Type2} where {Type1, Type2 <: AbstractComposite}
 Counts nodes of the tree rooted in `node`. `collectType` filters the type to be counted.
 """
-recursive_count(node::Type1, collectType::Type{Type2}) where {Type1, Type2 <: CompositeInterface} = begin
+recursive_count(node::Type1, collectType::Type{Type2}) where {Type1, Type2 <: AbstractComposite} = begin
 
     recursive_count_counter = 0
-        recursive_count(node::Type1,counter::Int64, collectType::Type{Type2}) where {Type1, Type2 <: CompositeInterface} = begin
-        if collectType == CompositeInterface
+        recursive_count(node::Type1,counter::Int64, collectType::Type{Type2}) where {Type1, Type2 <: AbstractComposite} = begin
+        if collectType == AbstractComposite
             recursive_count_counter += 1
         end
         (typeof(node) == collectType) && (recursive_count_counter +=1)
@@ -345,17 +345,17 @@ end
 
 
 """
-    recursive_collect(node::Type1, collectType::Type{Type2}) where {Type1, Type2 <: CompositeInterface}
+    recursive_collect(node::Type1, collectType::Type{Type2}) where {Type1, Type2 <: AbstractComposite}
 Collects nodes of the tree rooted in `node` in [Pre-order](https://en.wikipedia.org/wiki/Tree_traversal#Pre-order,_NLR).
 `collectType` filters the type to be collected. \n
 See also [`collectAtoms`](@ref), [`collectResidues`](@ref), [`collectChains`](@ref).
 """
-recursive_collect(node::Type1, collectType::Type{Type2}) where {Type1, Type2 <: CompositeInterface} = begin
+recursive_collect(node::Type1, collectType::Type{Type2}) where {Type1, Type2 <: AbstractComposite} = begin
     #performs a collect on current node and all its ancestors
     vec = Vector{collectType}()
 
-    recursive_collect(node::Type1,vec::Vector{Type2}, collectType::Type{Type2}) where {Type1, Type2 <: CompositeInterface} = begin
-        if collectType == CompositeInterface
+    recursive_collect(node::Type1,vec::Vector{Type2}, collectType::Type{Type2}) where {Type1, Type2 <: AbstractComposite} = begin
+        if collectType == AbstractComposite
             push!(vec,node)
         end
         (typeof(node) == collectType) && push!(vec,node)
@@ -374,28 +374,28 @@ recursive_collect(node::Type1, collectType::Type{Type2}) where {Type1, Type2 <: 
     return vec
 end
 """
-    collect(node::T) where T <: CompositeInterface
+    collect(node::T) where T <: AbstractComposite
 Collects all nodes in the subtree rooted in `node`.
 """
-Base.collect(node::T) where T <: CompositeInterface = begin
-    return recursive_collect(node,CompositeInterface)
+Base.collect(node::T) where T <: AbstractComposite = begin
+    return recursive_collect(node,AbstractComposite)
 end
 
 """
-    clearSelectionTree(x::CompositeInterface)
+    clearSelectionTree(x::AbstractComposite)
 Deselets any selected Nodes. See [`Selectable`](@ref).
 """
-function clearSelectionTree(x::CompositeInterface)
+function clearSelectionTree(x::AbstractComposite)
     for node in x
         deselect(x)
     end
 end
 
 """
-    countChildren(comp::CompositeInterface)
+    countChildren(comp::AbstractComposite)
 Counts the number of immediate Children.
 """
-countChildren(comp::CompositeInterface) = begin
+countChildren(comp::AbstractComposite) = begin
     count = 0
     if !isnothing(comp.first_child_)
         count = 1
@@ -409,17 +409,17 @@ countChildren(comp::CompositeInterface) = begin
 end
 
 """
-    getProperties(::CompositeInterface)
+    getProperties(::AbstractComposite)
 Getter of property-Vector
 """
-getProperties(comp::CompositeInterface) = begin
+getProperties(comp::AbstractComposite) = begin
     return comp.properties_
 end
 """
-    hasProperty(comp::CompositeInterface, property::String)
+    hasProperty(comp::AbstractComposite, property::String)
 Checks if `comp` has property `property`.
 """
-hasProperty(comp::CompositeInterface, property::String) = begin
+hasProperty(comp::AbstractComposite, property::String) = begin
     if any([property == x[1] for x in getProperties(comp) ])
        return true
     end
@@ -427,10 +427,10 @@ hasProperty(comp::CompositeInterface, property::String) = begin
 end
 
 """
-    getProperty(comp::CompositeInterface, property::String)
+    getProperty(comp::AbstractComposite, property::String)
 Gets value of `property` if set, else `nothing`.
 """
-getProperty(comp::CompositeInterface, property::String) = begin
+getProperty(comp::AbstractComposite, property::String) = begin
     if hasProperty(comp,property)
         index = findfirst((x::Tuple{String,UInt8})-> property == x[1], getProperties(comp))
         return getProperties(comp)[index][2]
@@ -439,26 +439,26 @@ getProperty(comp::CompositeInterface, property::String) = begin
 end
 
 """
-    setProperty(::CompositeInterface, ::Tuple{String,UInt8})
+    setProperty(::AbstractComposite, ::Tuple{String,UInt8})
 Setter. Deletes old property if needed.
 """
-setProperty(comp::CompositeInterface, property::Tuple{String,UInt8}) = begin
+setProperty(comp::AbstractComposite, property::Tuple{String,UInt8}) = begin
     if hasProperty(comp,property[1])
         index = findfirst((x::Tuple{String,UInt8})-> property[1] == x[1], getProperties(comp))
         deleteat!(getProperties(comp), index)
     end
     push!(comp.properties_, property)
 end
-setProperty(comp::CompositeInterface, property::Tuple{String,Bool}) = setProperty(comp,(property[1],UInt8(property[2])))
+setProperty(comp::AbstractComposite, property::Tuple{String,Bool}) = setProperty(comp,(property[1],UInt8(property[2])))
 
 """
-    getFirstAtom(comp::CompositeInterface)
-Returns the first object that is an `AtomInterface` subtype.
+    getFirstAtom(comp::AbstractComposite)
+Returns the first object that is an `AbstractAtom` subtype.
 """
-getFirstAtom(comp::CompositeInterface) = begin
-    cur::T where T <: CompositeInterface = comp
+getFirstAtom(comp::AbstractComposite) = begin
+    cur::T where T <: AbstractComposite = comp
     while !isnothing(cur)
-        if typeof(cur) <: AtomInterface
+        if typeof(cur) <: AbstractAtom
             return cur
         end
         cur = cur.first_child_
@@ -467,13 +467,13 @@ getFirstAtom(comp::CompositeInterface) = begin
 end
 
 """
-    getFirstResidue(comp::CompositeInterface)
-Returns the first object that is an `ResidueInterface` subtype.
+    getFirstResidue(comp::AbstractComposite)
+Returns the first object that is an `AbstractResidue` subtype.
 """
-getFirstResidue(comp::CompositeInterface) = begin
-    cur::T where T <: CompositeInterface = comp
+getFirstResidue(comp::AbstractComposite) = begin
+    cur::T where T <: AbstractComposite = comp
     while !isnothing(cur)
-        if typeof(cur) <: ResidueInterface
+        if typeof(cur) <: AbstractResidue
             return cur
         end
         cur = cur.first_child_
@@ -482,13 +482,13 @@ getFirstResidue(comp::CompositeInterface) = begin
 end
 
 """
-    getFirstChain(comp::CompositeInterface)
-Returns the first object that is an `ChainInterface` subtype.
+    getFirstChain(comp::AbstractComposite)
+Returns the first object that is an `AbstractChain` subtype.
 """
-getFirstChain(comp::CompositeInterface) = begin
-    cur::T where T <: CompositeInterface = comp
+getFirstChain(comp::AbstractComposite) = begin
+    cur::T where T <: AbstractComposite = comp
     while !isnothing(cur)
-        if typeof(cur) <: ChainInterface
+        if typeof(cur) <: AbstractChain
             return cur
         end
         cur = cur.first_child_
@@ -497,13 +497,13 @@ getFirstChain(comp::CompositeInterface) = begin
 end
 
 """
-    getFirstSystem(comp::CompositeInterface)
-Returns the first object that is an `SystemInterface` subtype.
+    getFirstSystem(comp::AbstractComposite)
+Returns the first object that is an `AbstractSystem` subtype.
 """
-getFirstSystem(comp::CompositeInterface) = begin
-    cur::T where T<:CompositeInterface = comp
+getFirstSystem(comp::AbstractComposite) = begin
+    cur::T where T<:AbstractComposite = comp
     while !isnothing(cur)
-        if typeof(cur) <: SystemInterface
+        if typeof(cur) <: AbstractSystem
             return cur
         end
         cur = cur.first_child_
@@ -514,11 +514,11 @@ end
 
 
 """
-    getName(comp::CompositeInterface)
+    getName(comp::AbstractComposite)
 Fallback getter for a `Composite`'s' name.\n See also [getName(::System)](@ref), [getName(::Chain)](@ref),
  [getName(::Atom)](@ref), [getName(::Residue)](@ref)
 """
-getName(comp::CompositeInterface) = begin
+getName(comp::AbstractComposite) = begin
 #chain and residue override this function in their respective julia file
     !isnothing(comp.name_) ? (return comp.name_) : "-"
 end

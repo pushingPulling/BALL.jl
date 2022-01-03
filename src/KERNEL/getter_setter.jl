@@ -104,401 +104,409 @@ end
 
 
 """
-    getPrevious(comp::CompositeInterface)
+    getPrevious(comp::AbstractComposite)
 """
-getPrevious(comp::CompositeInterface) = comp.previous_
+getPrevious(comp::AbstractComposite) = comp.previous_
 
 
 """
-    getNext(comp::CompositeInterface)
+    getNext(comp::AbstractComposite)
 """
-getNext(comp::CompositeInterface) = comp.next_
+getNext(comp::AbstractComposite) = comp.next_
 
 
 """
-    getFirstChild(comp::CompositeInterface)
+    getFirstChild(comp::AbstractComposite)
 """
-getFirstChild(comp::CompositeInterface) = comp.first_child_
+getFirstChild(comp::AbstractComposite) = comp.first_child_
 
 
 """
-    getLastChild(comp::CompositeInterface)
+    getLastChild(comp::AbstractComposite)
 """
-getLastChild(comp::CompositeInterface) = comp.last_child_
+getLastChild(comp::AbstractComposite) = comp.last_child_
 
 
 
 
 
 """
-    getTypeName(comp::CompositeInterface)
+    getTypeName(comp::AbstractComposite)
 """
-getTypeName(comp::CompositeInterface) = comp.type_name_
+getTypeName(comp::AbstractComposite) = comp.type_name_
 
 
 """
-    getElement(comp::CompositeInterface)
+    getElement(comp::AbstractComposite)
 """
-getElement(comp::CompositeInterface) = comp.element_
+getElement(comp::AbstractComposite) = comp.element_
 
 
 """
-    getRadius(comp::CompositeInterface)
+    getRadius(comp::AbstractComposite)
 """
-getRadius(comp::CompositeInterface) = comp.radius_
+getRadius(comp::AbstractComposite) = comp.radius_
 
 
 """
-    getType(comp::CompositeInterface)
+    getType(comp::AbstractComposite)
 """
-getType(comp::CompositeInterface) = comp.type_
+getType(comp::AbstractComposite) = comp.type_
 
 
 """
-    getNumberOfBonds(comp::CompositeInterface)
+    getNumberOfBonds(comp::AbstractComposite)
 """
-getNumberOfBonds(comp::CompositeInterface) = comp.number_of_bonds_
+getNumberOfBonds(comp::AbstractComposite) = comp.number_of_bonds_
 
 
 """
-    getFormalCharge(comp::CompositeInterface)
+    getFormalCharge(comp::AbstractComposite)
 """
-getFormalCharge(comp::CompositeInterface) = comp.formal_charge_
+getFormalCharge(comp::AbstractComposite) = comp.formal_charge_
 
 
 """
-    getPosition(comp::CompositeInterface)
+    getPosition(comp::AbstractComposite)
 """
-getPosition(comp::CompositeInterface) = comp.position_
+getPosition(comp::AbstractComposite) = comp.position_
 
 
 """
-    getPosition(comp_vec::Vector{T} where T<:AtomInterface)
+    getPosition(comp_vec::Vector{T} where T<:AbstractAtom)
 """
-getPosition(comp_vec::Vector{T} where T<:AtomInterface) = [comp.position_ for comp in comp_vec]
+getPosition(comp_vec::Vector{T} where T<:AbstractAtom) = [comp.position_ for comp in comp_vec]
 
 
 """
-    getCharge(comp::CompositeInterface)
+    getCharge(comp::AbstractComposite)
 """
-getCharge(comp::CompositeInterface) = comp.charge_
+getCharge(comp::AbstractComposite) = comp.charge_
 
 
 """
-    getVelocity(comp::CompositeInterface)
+    getVelocity(comp::AbstractComposite)
 """
-getVelocity(comp::CompositeInterface) = comp.velocity_
+getVelocity(comp::AbstractComposite) = comp.velocity_
 
 
 """
-    getForce(comp::CompositeInterface)
+    getForce(comp::AbstractComposite)
 """
-getForce(comp::CompositeInterface) = comp.force_
+getForce(comp::AbstractComposite) = comp.force_
 
 
 """
-    getOccupancy(comp::CompositeInterface)
+    getOccupancy(comp::AbstractComposite)
 """
-getOccupancy(comp::CompositeInterface) = comp.occupancy_
+getOccupancy(comp::AbstractComposite) = comp.occupancy_
 
 
 """
-    getSerial(comp::CompositeInterface)
+    getSerial(comp::AbstractComposite)
 """
-getSerial(comp::CompositeInterface) = comp.serial_
+getSerial(comp::AbstractComposite) = comp.serial_
 
 
 """
-    getTempFactor(comp::CompositeInterface)
+    getTempFactor(comp::AbstractComposite)
 """
-getTempFactor(comp::CompositeInterface) = comp.temp_factor_
+getTempFactor(comp::AbstractComposite) = comp.temp_factor_
 
 
 
 
 
 """
-    getBonds(comp::CompositeInterface)
+    getBonds(comp::AbstractComposite)
 """
-getBonds(comp::CompositeInterface) = comp.bonds_
+getBonds(comp::AbstractComposite) = comp.bonds_
 
+"""
+    getSource(comp::AbstractComposite)
+"""
+getSource(bond::Bond) = bond.source_
 
 
+"""
+    getTarget(comp::AbstractComposite)
+"""
+getTarget(bond::Bond) = bond.target_
 
 
 """
-    getNumberOfChildren(comp::CompositeInterface)
+    getNumberOfChildren(comp::AbstractComposite)
 """
-getNumberOfChildren(comp::CompositeInterface) = comp.number_of_children_
+getNumberOfChildren(comp::AbstractComposite) = comp.number_of_children_
 
 
 """
-    getContainsSelection(comp::CompositeInterface)
+    getContainsSelection(comp::AbstractComposite)
 """
-getContainsSelection(comp::CompositeInterface) = comp.contains_selection_
+getContainsSelection(comp::AbstractComposite) = comp.contains_selection_
 
 
 """
-    getNumberOfSelectedChildren(comp::CompositeInterface)
+    getNumberOfSelectedChildren(comp::AbstractComposite)
 """
-getNumberOfSelectedChildren(comp::CompositeInterface) = comp.number_of_selected_children_
+getNumberOfSelectedChildren(comp::AbstractComposite) = comp.number_of_selected_children_
 
 
 """
-    getNumberOfChildrenContainingSelection(comp::CompositeInterface)
+    getNumberOfChildrenContainingSelection(comp::AbstractComposite)
 """
-getNumberOfChildrenContainingSelection(comp::CompositeInterface) = comp.number_of_children_containing_selection_
+getNumberOfChildrenContainingSelection(comp::AbstractComposite) = comp.number_of_children_containing_selection_
 
 
 """
-    getSelectionStamp(comp::CompositeInterface)
+    getSelectionStamp(comp::AbstractComposite)
 """
-getSelectionStamp(comp::CompositeInterface) = comp.selection_stamp_
+getSelectionStamp(comp::AbstractComposite) = comp.selection_stamp_
 
 
 """
-    getModificationStamp(comp::CompositeInterface)
+    getModificationStamp(comp::AbstractComposite)
 """
-getModificationStamp(comp::CompositeInterface) = comp.modification_stamp_
+getModificationStamp(comp::AbstractComposite) = comp.modification_stamp_
 
 
 """
-    getTrait(comp::CompositeInterface)
+    getTrait(comp::AbstractComposite)
 """
-getTrait(comp::CompositeInterface) = comp.trait_
+getTrait(comp::AbstractComposite) = comp.trait_
 
 
 """
-    getInsertionCode(comp::CompositeInterface)
+    getInsertionCode(comp::AbstractComposite)
 """
-getInsertionCode(comp::CompositeInterface) = comp.insertion_code_
+getInsertionCode(comp::AbstractComposite) = comp.insertion_code_
 
 
 """
-    getIsDisordered(comp::CompositeInterface)
+    getIsDisordered(comp::AbstractComposite)
 """
-getIsDisordered(comp::CompositeInterface) = comp.is_disordered_
+getIsDisordered(comp::AbstractComposite) = comp.is_disordered_
 
 
 """
-    getResNumber(comp::CompositeInterface)
+    getResNumber(comp::AbstractComposite)
 """
-getResNumber(comp::CompositeInterface) = comp.res_number_
+getResNumber(comp::AbstractComposite) = comp.res_number_
 
 
 
 
 """
-    getId(comp::CompositeInterface)
+    getId(comp::AbstractComposite)
 """
-getId(comp::CompositeInterface) = comp.id_
+getId(comp::AbstractComposite) = comp.id_
 
 
 
 
 
 """
-    setParent(comp::CompositeInterface, value::Union{Nothing,CompositeInterface})
+    setParent(comp::AbstractComposite, value::Union{Nothing,AbstractComposite})
 """
-setParent(comp::CompositeInterface, value::Union{Nothing,CompositeInterface}) = begin comp.parent_ = value end
+setParent(comp::AbstractComposite, value::Union{Nothing,AbstractComposite}) = begin comp.parent_ = value end
 
 
 """
-    setPrevious(comp::CompositeInterface, value::Union{Nothing,CompositeInterface})
+    setPrevious(comp::AbstractComposite, value::Union{Nothing,AbstractComposite})
 """
-setPrevious(comp::CompositeInterface, value::Union{Nothing,CompositeInterface}) = begin comp.previous_ = value end
+setPrevious(comp::AbstractComposite, value::Union{Nothing,AbstractComposite}) = begin comp.previous_ = value end
 
 
 """
-    setNext(comp::CompositeInterface, value::Union{Nothing,CompositeInterface})
+    setNext(comp::AbstractComposite, value::Union{Nothing,AbstractComposite})
 """
-setNext(comp::CompositeInterface, value::Union{Nothing,CompositeInterface}) = begin comp.next_ = value end
+setNext(comp::AbstractComposite, value::Union{Nothing,AbstractComposite}) = begin comp.next_ = value end
 
 
 """
-    setFirstChild(comp::CompositeInterface, value::Union{CompositeInterface, Nothing})
+    setFirstChild(comp::AbstractComposite, value::Union{AbstractComposite, Nothing})
 """
-setFirstChild(comp::CompositeInterface, value::Union{CompositeInterface, Nothing}) = begin comp.first_child_ = value end
+setFirstChild(comp::AbstractComposite, value::Union{AbstractComposite, Nothing}) = begin comp.first_child_ = value end
 
 
 """
-    setLastChild(comp::CompositeInterface, value::Union{CompositeInterface, Nothing})
+    setLastChild(comp::AbstractComposite, value::Union{AbstractComposite, Nothing})
 """
-setLastChild(comp::CompositeInterface, value::Union{CompositeInterface, Nothing}) = begin comp.last_child_ = value end
+setLastChild(comp::AbstractComposite, value::Union{AbstractComposite, Nothing}) = begin comp.last_child_ = value end
 
 
 """
-    setName(comp::CompositeInterface, value::Union{String,Nothing})
+    setName(comp::AbstractComposite, value::Union{String,Nothing})
 """
-setName(comp::CompositeInterface, value::Union{String,Nothing}) = begin comp.name_ = value end
+setName(comp::AbstractComposite, value::Union{String,Nothing}) = begin comp.name_ = value end
 
 
 """
-    setTypeName(comp::CompositeInterface, value::Union{String,Nothing})
+    setTypeName(comp::AbstractComposite, value::Union{String,Nothing})
 """
-setTypeName(comp::CompositeInterface, value::Union{String,Nothing}) = begin comp.type_name_ = value end
+setTypeName(comp::AbstractComposite, value::Union{String,Nothing}) = begin comp.type_name_ = value end
 
 
 """
-    setElement(comp::CompositeInterface, value::Union{Element,Nothing})
+    setElement(comp::AbstractComposite, value::Union{Element,Nothing})
 """
-setElement(comp::CompositeInterface, value::Union{Element,Nothing}) = begin comp.element_ = value end
+setElement(comp::AbstractComposite, value::Union{Element,Nothing}) = begin comp.element_ = value end
 
 
 """
-    setRadius(comp::CompositeInterface, value::Union{Float64,Nothing})
+    setRadius(comp::AbstractComposite, value::Union{Float64,Nothing})
 """
-setRadius(comp::CompositeInterface, value::Union{Float64,Nothing}) = begin comp.radius_ = value end
+setRadius(comp::AbstractComposite, value::Union{Float64,Nothing}) = begin comp.radius_ = value end
 
 
 """
-    setType(comp::CompositeInterface, value::Union{UInt8,Nothing})
+    setType(comp::AbstractComposite, value::Union{UInt8,Nothing})
 """
-setType(comp::CompositeInterface, value::Union{UInt8,Nothing}) = begin comp.type_ = value end
+setType(comp::AbstractComposite, value::Union{UInt8,Nothing}) = begin comp.type_ = value end
 
 
 """
-    setNumberOfBonds(comp::CompositeInterface, value::Union{UInt8,Nothing})
+    setNumberOfBonds(comp::AbstractComposite, value::Union{UInt8,Nothing})
 """
-setNumberOfBonds(comp::CompositeInterface, value::Union{UInt8,Nothing}) = begin comp.number_of_bonds_ = value end
+setNumberOfBonds(comp::AbstractComposite, value::Union{UInt8,Nothing}) = begin comp.number_of_bonds_ = value end
 
 
 """
-    setFormalCharge(comp::CompositeInterface, value::Union{Int64,Nothing})
+    setFormalCharge(comp::AbstractComposite, value::Union{Int64,Nothing})
 """
-setFormalCharge(comp::CompositeInterface, value::Union{Int64,Nothing}) = begin comp.formal_charge_ = value end
+setFormalCharge(comp::AbstractComposite, value::Union{Int64,Nothing}) = begin comp.formal_charge_ = value end
 
 
 """
-    setPosition(comp::CompositeInterface, value::Union{SVector{3,Float64},Nothing})
+    setPosition(comp::AbstractComposite, value::Union{SVector{3,Float64},Nothing})
 """
-setPosition(comp::CompositeInterface, value::Union{SVector{3,Float64},Nothing}) = begin comp.position_ = value end
+setPosition(comp::AbstractComposite, value::Union{SVector{3,Float64},Nothing}) = begin comp.position_ = value end
 
 
 """
-    setCharge(comp::CompositeInterface, value::Union{Float64,Nothing})
+    setCharge(comp::AbstractComposite, value::Union{Float64,Nothing})
 """
-setCharge(comp::CompositeInterface, value::Union{Float64,Nothing}) = begin comp.charge_ = value end
+setCharge(comp::AbstractComposite, value::Union{Float64,Nothing}) = begin comp.charge_ = value end
 
 
 """
-    setVelocity(comp::CompositeInterface, value::Union{SVector{3,Float64},Nothing})
+    setVelocity(comp::AbstractComposite, value::Union{SVector{3,Float64},Nothing})
 """
-setVelocity(comp::CompositeInterface, value::Union{SVector{3,Float64},Nothing}) = begin comp.velocity_ = value end
+setVelocity(comp::AbstractComposite, value::Union{SVector{3,Float64},Nothing}) = begin comp.velocity_ = value end
 
 
 """
-    setForce(comp::CompositeInterface, value::Union{SVector{3,Float64},Nothing})
+    setForce(comp::AbstractComposite, value::Union{SVector{3,Float64},Nothing})
 """
-setForce(comp::CompositeInterface, value::Union{SVector{3,Float64},Nothing}) = begin comp.force_ = value end
+setForce(comp::AbstractComposite, value::Union{SVector{3,Float64},Nothing}) = begin comp.force_ = value end
 
 
 """
-    setOccupancy(comp::CompositeInterface, value::Union{Float64, Nothing})
+    setOccupancy(comp::AbstractComposite, value::Union{Float64, Nothing})
 """
-setOccupancy(comp::CompositeInterface, value::Union{Float64, Nothing}) = begin comp.occupancy_ = value end
+setOccupancy(comp::AbstractComposite, value::Union{Float64, Nothing}) = begin comp.occupancy_ = value end
 
 
 """
-    setSerial(comp::CompositeInterface, value::Union{Int64,Nothing})
+    setSerial(comp::AbstractComposite, value::Union{Int64,Nothing})
 """
-setSerial(comp::CompositeInterface, value::Union{Int64,Nothing}) = begin comp.serial_ = value end
+setSerial(comp::AbstractComposite, value::Union{Int64,Nothing}) = begin comp.serial_ = value end
 
 
 """
-    setTempFactor(comp::CompositeInterface, value::Union{Float64,Nothing})
+    setTempFactor(comp::AbstractComposite, value::Union{Float64,Nothing})
 """
-setTempFactor(comp::CompositeInterface, value::Union{Float64,Nothing}) = begin comp.temp_factor_ = value end
+setTempFactor(comp::AbstractComposite, value::Union{Float64,Nothing}) = begin comp.temp_factor_ = value end
 
 
 
 
 
 """
-    setBonds(comp::CompositeInterface, value::Dict{Atom, Bond})
+    setBonds(comp::AbstractComposite, value::Dict{Atom, Bond})
 """
-setBonds(comp::CompositeInterface, value::Dict{Atom, Bond}) = begin comp.bonds_ = value end
+setBonds(comp::AbstractComposite, value::Dict{Atom, Bond}) = begin comp.bonds_ = value end
 
 
 """
-    setProperties(comp::CompositeInterface, value::Vector{Tuple{String,UInt8}})
+    setProperties(comp::AbstractComposite, value::Vector{Tuple{String,UInt8}})
 """
-setProperties(comp::CompositeInterface, value::Vector{Tuple{String,UInt8}}) = begin comp.properties_ = value end
+setProperties(comp::AbstractComposite, value::Vector{Tuple{String,UInt8}}) = begin comp.properties_ = value end
 
 
 """
-    setNumberOfChildren(comp::CompositeInterface, value::Union{Int64,Nothing})
+    setNumberOfChildren(comp::AbstractComposite, value::Union{Int64,Nothing})
 """
-setNumberOfChildren(comp::CompositeInterface, value::Union{Int64,Nothing}) = begin comp.number_of_children_ = value end
+setNumberOfChildren(comp::AbstractComposite, value::Union{Int64,Nothing}) = begin comp.number_of_children_ = value end
 
 
 """
-    setContainsSelection(comp::CompositeInterface, value::Union{Bool,Nothing})
+    setContainsSelection(comp::AbstractComposite, value::Union{Bool,Nothing})
 """
-setContainsSelection(comp::CompositeInterface, value::Union{Bool,Nothing}) = begin comp.contains_selection_ = value end
+setContainsSelection(comp::AbstractComposite, value::Union{Bool,Nothing}) = begin comp.contains_selection_ = value end
 
 
 """
-    setNumberOfSelectedChildren(comp::CompositeInterface, value::Union{Int64,Nothing})
+    setNumberOfSelectedChildren(comp::AbstractComposite, value::Union{Int64,Nothing})
 """
-setNumberOfSelectedChildren(comp::CompositeInterface, value::Union{Int64,Nothing}) = begin comp.number_of_selected_children_ = value end
+setNumberOfSelectedChildren(comp::AbstractComposite, value::Union{Int64,Nothing}) = begin comp.number_of_selected_children_ = value end
 
 
 """
-    setNumberOfChildrenContainingSelection(comp::CompositeInterface, value::Union{Int64,Nothing})
+    setNumberOfChildrenContainingSelection(comp::AbstractComposite, value::Union{Int64,Nothing})
 """
-setNumberOfChildrenContainingSelection(comp::CompositeInterface, value::Union{Int64,Nothing}) = begin comp.number_of_children_containing_selection_ = value end
+setNumberOfChildrenContainingSelection(comp::AbstractComposite, value::Union{Int64,Nothing}) = begin comp.number_of_children_containing_selection_ = value end
 
 
 """
-    setSelectionStamp(comp::CompositeInterface, value::Union{TimeStamp,Nothing})
+    setSelectionStamp(comp::AbstractComposite, value::Union{TimeStamp,Nothing})
 """
-setSelectionStamp(comp::CompositeInterface, value::Union{TimeStamp,Nothing}) = begin comp.selection_stamp_ = value end
+setSelectionStamp(comp::AbstractComposite, value::Union{TimeStamp,Nothing}) = begin comp.selection_stamp_ = value end
 
 
 """
-    setModificationStamp(comp::CompositeInterface, value::Union{TimeStamp,Nothing})
+    setModificationStamp(comp::AbstractComposite, value::Union{TimeStamp,Nothing})
 """
-setModificationStamp(comp::CompositeInterface, value::Union{TimeStamp,Nothing}) = begin comp.modification_stamp_ = value end
+setModificationStamp(comp::AbstractComposite, value::Union{TimeStamp,Nothing}) = begin comp.modification_stamp_ = value end
 
 
 """
-    setTrait(comp::CompositeInterface, value::Union{CompositeInterface, Nothing})
+    setTrait(comp::AbstractComposite, value::Union{AbstractComposite, Nothing})
 """
-setTrait(comp::CompositeInterface, value::Union{CompositeInterface, Nothing}) = begin comp.trait_ = value end
+setTrait(comp::AbstractComposite, value::Union{AbstractComposite, Nothing}) = begin comp.trait_ = value end
 
 
 """
-    setInsertionCode(comp::CompositeInterface, value::Union{Char,Nothing})
+    setInsertionCode(comp::AbstractComposite, value::Union{Char,Nothing})
 """
-setInsertionCode(comp::CompositeInterface, value::Union{Char,Nothing}) = begin comp.insertion_code_ = value end
+setInsertionCode(comp::AbstractComposite, value::Union{Char,Nothing}) = begin comp.insertion_code_ = value end
 
 
 """
-    setIsDisordered(comp::CompositeInterface, value::Union{Bool,Nothing})
+    setIsDisordered(comp::AbstractComposite, value::Union{Bool,Nothing})
 """
-setIsDisordered(comp::CompositeInterface, value::Union{Bool,Nothing}) = begin comp.is_disordered_ = value end
+setIsDisordered(comp::AbstractComposite, value::Union{Bool,Nothing}) = begin comp.is_disordered_ = value end
 
 
 """
-    setResNumber(comp::CompositeInterface, value::Union{Int64,Nothing})
+    setResNumber(comp::AbstractComposite, value::Union{Int64,Nothing})
 """
-setResNumber(comp::CompositeInterface, value::Union{Int64,Nothing}) = begin comp.res_number_ = value end
+setResNumber(comp::AbstractComposite, value::Union{Int64,Nothing}) = begin comp.res_number_ = value end
 
 
 """
-    setIsHetero(comp::CompositeInterface, value::Union{Bool,Nothing})
+    setIsHetero(comp::AbstractComposite, value::Union{Bool,Nothing})
 """
-setIsHetero(comp::CompositeInterface, value::Union{Bool,Nothing}) = begin comp.is_hetero_ = value end
+setIsHetero(comp::AbstractComposite, value::Union{Bool,Nothing}) = begin comp.is_hetero_ = value end
 
 
 
 
 
 """
-    setId(comp::CompositeInterface, value::Union{Char, Nothing})
+    setId(comp::AbstractComposite, value::Union{Char, Nothing})
 """
-setId(comp::CompositeInterface, value::Union{Char, Nothing}) = begin comp.id_ = value end
+setId(comp::AbstractComposite, value::Union{Char, Nothing}) = begin comp.id_ = value end
 
 
 
@@ -564,6 +572,11 @@ getPosition(df_row::DataFrameRow) = df_row.position_
     getPosition(df::DataFrame)
 """
 getPosition(df::DataFrame) = df.position_
+
+"""
+    getPosition(df::DataFrame)
+"""
+getPosition(df::SubDataFrame) = df.position_
 
 
 

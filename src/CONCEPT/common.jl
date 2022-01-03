@@ -5,7 +5,7 @@
 module CONCEPT
 
 
-export CompositeType, Composite, CompositeInterface, TimeStamp, PreciseTime
+export CompositeType, Composite, AbstractComposite, TimeStamp, PreciseTime
 
 
 end

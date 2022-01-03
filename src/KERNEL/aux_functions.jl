@@ -48,10 +48,10 @@ end
 
 
 """
-    countBonds(node::CompositeInterface)
+    countBonds(node::AbstractComposite)
 Returns the number of `Bond`s in the subtree rooted in `node`.
 """
-countBonds(node::CompositeInterface) = begin
+countBonds(node::AbstractComposite) = begin
     count::Int = 0
     for at in collectAtoms(node)
         count += length(getBonds(at))
@@ -59,27 +59,14 @@ countBonds(node::CompositeInterface) = begin
     return count
 end
 
-"""
-    countBonds(dfs::DataFrameSystem)
-Returns the number of `Bond`s in the `DataFrameSystem`.
-"""
-countBonds(dfs::DataFrameSystem) = nrow(dfs.bonds)
-
-"""
-    eachBond(::DataFrameSystem)
-Returns an iterator of all bonds in the `DataFrameSystem`.
-"""
-eachBond(dfs::DataFrameSystem) = eachrow(dfs.bonds)
-
-eachBond(comp::CompositeInterface) = collectBonds(comp)
 
 
 
 """
-    countAtoms(node::CompositeInterface)
+    countAtoms(node::AbstractComposite)
 Counts the `Atom`s in the subtree rooted in `node`.
 """
-countAtoms(node::CompositeInterface) = begin
+countAtoms(node::AbstractComposite) = begin
     recursive_count(node, Atom)
 end
 
@@ -91,10 +78,10 @@ countAtoms(dfs::DataFrameSystem) = nrow(dfs.atoms)
 
 
 """
-    countResidues(node::CompositeInterface)
+    countResidues(node::AbstractComposite)
 Counts the `Atom`s in the subtree rooted in `node`.
 """
-countResidues(node::CompositeInterface) = begin
+countResidues(node::AbstractComposite) = begin
     recursive_count(node, Residue)
 end
 
@@ -106,10 +93,10 @@ countResidues(dfs::DataFrameSystem) = nrow(dfs.residues)
 
 
 """
-    countChains(node::CompositeInterface)
+    countChains(node::AbstractComposite)
 Counts the `Atom`s in the subtree rooted in `node`.
 """
-countChains(node::CompositeInterface) = begin
+countChains(node::AbstractComposite) = begin
     recursive_count(node, Chain)
 end
 
@@ -121,10 +108,10 @@ countChains(dfs::DataFrameSystem) = nrow(dfs.chains)
 
 
 """
-    countSystems(node::CompositeInterface)
+    countSystems(node::AbstractComposite)
 Counts the `Atom`s in the subtree rooted in `node`.
 """
-countSystems(node::CompositeInterface) = begin
+countSystems(node::AbstractComposite) = begin
     recursive_count(node, System)
 end
 
@@ -133,6 +120,11 @@ end
 Returns the number of `System`s in the `DataFrameSystem`.
 """
 countSystems(dfs::DataFrameSystem) = nrow(dfs.systems)
+
+countAtoms(dfr::DataFrameRow) = begin
+    return length(eachAtom(dfr))
+end
+
 
 
 
@@ -144,11 +136,6 @@ Collects (copies of) all the atoms in a `DataFrameSystem`.
 collectAtoms(dfs::DataFrameSystem) = begin
     return dfs.atoms
 end
-
-collectAtoms(dfr::DataFrameRow) = begin
-
-end
-
 
 eachAtom(df::AbstractDataFrame) = begin
     atoms = DataFrameRow[]
@@ -181,6 +168,38 @@ eachAtom(df::AbstractDataFrame) = begin
         return atoms
     end
 end
+
+collectAtoms(dfr::DataFrameRow) = begin
+    return eachAtom()
+end
+
+"""
+    countBonds(dfs::DataFrameSystem)
+Returns the number of `Bond`s in the `DataFrameSystem`.
+"""
+countBonds(dfs::DataFrameSystem) = nrow(dfs.bonds)
+
+"""
+    eachBond(::DataFrameSystem)
+Returns an iterator of all bonds in the `DataFrameSystem`.
+"""
+eachBond(dfs::DataFrameSystem) = eachrow(dfs.bonds)
+
+"""
+    eachBond(::DataFrameSystem)
+Returns an iterator of all bonds in the `comp`-tree.
+"""
+eachBond(comp::AbstractComposite) = collectBonds(comp)
+
+eachBond(dfr::DataFrameRow) = begin
+    result_set = Set{DataFrameRow}()
+    for at in eachAtom(dfr)
+        push!(result_set, getBonds(at)...)
+    end
+    return result_set
+end
+
+countBonds(dfr::DataFrameRow) = length(eachBond(dfr))
 
 eachResidue(df::AbstractDataFrame) = begin
     residues = DataFrameRow[]
@@ -247,10 +266,10 @@ eachAtom(dfr::DataFrameRow) = begin
 end
 
 """
-    eachAtom(node::CompositeInterface)
+    eachAtom(node::AbstractComposite)
 Returns an iterator of all `Atom`s of the subtree rooted in `node`. See [`collectAtoms`](@ref)
 """
-eachAtom(node::CompositeInterface) = begin
+eachAtom(node::AbstractComposite) = begin
     return collectAtoms(node)
 end
 
@@ -274,18 +293,18 @@ end
 
 
 """
-    collectResidues(node::CompositeInterface, selector::Function)
+    collectResidues(node::AbstractComposite, selector::Function)
 Collects all the `Residue`s of the subtree rooted in `node`.  Filters the returned list using `selector`.
 """
-collectResidues(node::CompositeInterface, selector::Function) = begin
+collectResidues(node::AbstractComposite, selector::Function) = begin
     filter!(selector, collectResidues(node))
 end
 
 """
-    eachResidue(node::CompositeInterface)
+    eachResidue(node::AbstractComposite)
 Collects a the `Residue`s of the subtree rooted in `node`. See [`collectResidues`](@ref)
 """
-viewResidues(node::CompositeInterface) = begin
+viewResidues(node::AbstractComposite) = begin
     return collectResidues(node)
 end
 
@@ -300,10 +319,10 @@ end
 
 
 """
-    collectChains(node::CompositeInterface, selector::Function)
+    collectChains(node::AbstractComposite, selector::Function)
 Collects all the `Chain`s of the subtree rooted in `node`.  Filters the returned list using `selector`.
 """
-collectChains(node::CompositeInterface, selector::Function) = begin
+collectChains(node::AbstractComposite, selector::Function) = begin
     filter!(selector, collectChains(node))
 end
 
@@ -316,10 +335,10 @@ collectChains(dfs::DataFrameSystem) = begin
 end
 
 """
-    eachChain(node::CompositeInterface)
+    eachChain(node::AbstractComposite)
 Returns an iterator of all `Chain`s of the subtree rooted in `node`. See [`collectAtoms`](@ref)
 """
-eachChain(node::CompositeInterface) = begin
+eachChain(node::AbstractComposite) = begin
     return collectResidues(node)
 end
 
@@ -335,10 +354,10 @@ end
 
 
 """
-    collectSystems(node::CompositeInterface, selector::Function)
+    collectSystems(node::AbstractComposite, selector::Function)
 Collects all the `System`s of the subtree rooted in `node`.  Filters the returned list using `selector`.
 """
-collectSystems(node::CompositeInterface, selector::Function) = begin
+collectSystems(node::AbstractComposite, selector::Function) = begin
     filter!(selector, collectSystems(node))
 end
 
@@ -352,10 +371,10 @@ end
 
 
 """
-    eachSystem(node::CompositeInterface)
+    eachSystem(node::AbstractComposite)
 Returns an iterator of all `System`s of the subtree rooted in `node`. See [`collectAtoms`](@ref)
 """
-eachSystem(node::CompositeInterface) = begin
+eachSystem(node::AbstractComposite) = begin
     return collectSystems(node)
 end
 
@@ -369,7 +388,7 @@ end
 
 
 
-Base.show(io::IO, comp::CompositeInterface) = print(io, typeof(comp)," \"",getName(comp), "\" with ",
+Base.show(io::IO, comp::AbstractComposite) = print(io, typeof(comp)," \"",getName(comp), "\" with ",
 countChildren(comp), " child",countChildren(comp) == 1 ? "" : "ren", " containing ", countAtoms(comp)," Atoms")
 
 
@@ -402,8 +421,8 @@ getFirstAtom(dfs::DataFrameSystem) = first(dfs.atoms)
 
 
 const comparisonops = [:<,:>]
-const kerneltype = [[Atom,AtomInterface],[Residue,ResidueInterface],[Chain,ChainInterface],
-                    [SystemInterface,System]]
+const kerneltype = [[Atom,AbstractAtom],[Residue,AbstractResidue],[Chain,AbstractChain],
+                    [AbstractSystem,System]]
 for x in kerneltype
     for y in kerneltype
         for op in comparisonops
@@ -421,16 +440,16 @@ end
 
 import Base.findfirst
 """
-    findfirst(start_node::CompositeInterface,target_type::Type{T}, chain_attributes=(),
-        residue_attributes=(), atom_attributes=()) where T<:CompositeInterface
+    findfirst(start_node::AbstractComposite,target_type::Type{T}, chain_attributes=(),
+        residue_attributes=(), atom_attributes=()) where T<:AbstractComposite
 Finds the first node for which all the attributes in the `Named Tuple`s apply.
 Omitting Tuples causes the function to stop early.
 """
-findfirst(start_node::CompositeInterface,target_type::Type{T}, chain_attributes=(),
-        residue_attributes=(), atom_attributes=()) where T<:CompositeInterface = begin
+findfirst(start_node::AbstractComposite,target_type::Type{T}, chain_attributes=(),
+        residue_attributes=(), atom_attributes=()) where T<:AbstractComposite = begin
 
     target_type > Chain && return nothing
-    cur_node::CompositeInterface = start_node
+    cur_node::AbstractComposite = start_node
 
     if typeof(cur_node) > Chain && !isempty(chain_attributes)
         for ch in collectChains(cur_node)
@@ -469,7 +488,8 @@ end
 
 import Base.getindex
 
-Base.getindex(x::CompositeInterface,sy::Core.Symbol) = Base.getfield(x,sy)
+Base.getindex(x::AbstractComposite,sy::Core.Symbol) = Base.getfield(x,sy)
+Base.getindex(x::Atom,sy::Core.Symbol) = Base.getfield(x,sy)
 Base.getindex(x::Bond, sy::Core.Symbol) = Base.getfield(x,sy)
 Base.getindex(x::System, i::Int) = collectChains(x)[i]
 Base.getindex(x::System, c::Char) = Base.getindex(x, Int(c- 'A') + 1)
@@ -484,13 +504,13 @@ Base.getindex(vec_chain::Vector{Chain}, id::Char) =  vec_chain[findfirst(x->x.id
 
 
 ##DEPRECATED
-findall(start_node::CompositeInterface,target_type::Type{T}, chain_attributes=(),
-        residue_attributes=(), atom_attributes=()) where T<:CompositeInterface = begin
+findall(start_node::AbstractComposite,target_type::Type{T}, chain_attributes=(),
+        residue_attributes=(), atom_attributes=()) where T<:AbstractComposite = begin
 
     target_type > Chain && return start_node
 
     result = target_type[]
-    cur_node::CompositeInterface = start_node
+    cur_node::AbstractComposite = start_node
 
     if typeof(cur_node) > Chain && !isempty(chain_attributes)
         for ch in collectChains(cur_node)
@@ -553,10 +573,10 @@ end
 
 
 """
-    sequentialResidues(res::Union{DFR,ResidueInterface}, res_next::Union{DFR,ResidueInterface})
+    sequentialResidues(res::Union{DFR,AbstractResidue}, res_next::Union{DFR,AbstractResidue})
 Returns true if `res` comes before `res_next` in the same Chain and if both are hetero/non-hetero residues.
 """
-sequentialResidues(res::Union{DFR,ResidueInterface}, res_next::Union{DFR,ResidueInterface}) = begin
+sequentialResidues(res::Union{DFR,AbstractResidue}, res_next::Union{DFR,AbstractResidue}) = begin
     return getParent(res) == getParent(res_next) &&
             isHetero(res) == isHetero(res_next) &&
             getNext(res) == res_next

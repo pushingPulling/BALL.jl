@@ -9,9 +9,9 @@ A specialization of [`SimpleMolecularGraph.Node`](@ref). Adds `Edge`s pointing b
 """
 mutable struct BackpointingNode <: AbstractNode
     adjacent_edges_ ::Vector{Edge}
-    atom_           ::Atom
+    atom_           ::Union{Atom, DataFrameRow}
     parent_         ::BackpointingNode
-    BackpointingNode(at::Atom) = (x = new(Edge[], at); x.parent_ = x)
+    BackpointingNode(at::Union{Atom, DataFrameRow}) = (x = new(Edge[], at); x.parent_ = x)
 end
 
 
@@ -116,7 +116,7 @@ minimum_cycle_basis(graph::MolecularGraph) = begin
     bfs = breadthFirstSearchMCB(graph, first(values(graph.atoms_to_nodes_)),true)
     bfs_bonds =  Set([x.bond_ for x in eachEdge(bfs)])
     graph_bonds =  Set([x.bond_ for x in eachEdge(graph)])
-    nodes_with_missing_edges = [graph.atoms_to_nodes_[bond.source_] for bond in setdiff(graph_bonds, bfs_bonds)]
+    nodes_with_missing_edges = [graph.atoms_to_nodes_[getSource(bond)] for bond in setdiff(graph_bonds, bfs_bonds)]
     graph_nodes = filter(x->!in(x,nodes_with_missing_edges), collect(eachNode(graph)))
     graph_nodes = vcat(nodes_with_missing_edges, graph_nodes)
     i = 1

@@ -10,15 +10,15 @@ export
 using Distances: euclidean, sqeuclidean
 
 """
-Standard representation for an Atom (e.g. in a Molecule). See also [`CompositeInterface`](@ref).
+Standard representation for an Atom (e.g. in a Molecule). See also [`AbstractComposite`](@ref).
 """
-mutable struct Atom <: AtomInterface    #AtomInterface inherits from CompositeInterface
+mutable struct Atom <: AbstractAtom    #AbstractAtom inherits from AbstractComposite
     name_           ::Union{String,Nothing}
-    parent_         ::Union{Nothing,CompositeInterface}
-    previous_       ::Union{Nothing,CompositeInterface}
-    next_           ::Union{Nothing,CompositeInterface}
-    first_child_    ::Union{CompositeInterface, Nothing}
-    last_child_     ::Union{CompositeInterface, Nothing}
+    parent_         ::Union{Nothing,AbstractComposite}
+    previous_       ::Union{Nothing,AbstractComposite}
+    next_           ::Union{Nothing,AbstractComposite}
+    first_child_    ::Union{AbstractComposite, Nothing}
+    last_child_     ::Union{AbstractComposite, Nothing}
     type_name_      ::Union{String,Nothing}
     element_        ::Union{Element,Nothing}
     radius_         ::Union{Float64,Nothing}
@@ -115,10 +115,10 @@ Atom(   atomname::String, x::Float64, y::Float64, z::Float64,
 
 
 
-getBonds(at::T) where T<:AtomInterface = at.bonds_
+getBonds(at::T) where T<:AbstractAtom = at.bonds_
 
 """
-    collectBonds(node::CompositeInterface)
+    collectBonds(node::AbstractComposite)
 Returns a `Set` of all the `Bond`s of the atoms in the subtree rooted in `node`.
 """
 
@@ -129,23 +129,23 @@ Resturns a `SVector` with the Atoms coordinates.
 coords(at::Atom) = at.position_
 
 
-collectBonds(node::CompositeInterface) = begin
+collectBonds(node::AbstractComposite) = begin
     bonds = Set{Bond}()
     for at in collectAtoms(node)
         length(values(getBonds(at))) > 0 && push!(bonds, values(getBonds(at))...)
     end
     return collect(bonds)
 end
-viewBonds(node::CompositeInterface) = collectBonds(node)
+viewBonds(node::AbstractComposite) = collectBonds(node)
 
 
 """
     getElementSymbol(at::Atom) -> String
 Returns the Periodic Talble of Elements' symbol of the element of the atom.
 """
-getElementSymbol(at::T) where T<:AtomInterface = at.element_.symbol_
+getElementSymbol(at::T) where T<:AbstractAtom = at.element_.symbol_
 
-setFormalCharge(at::T, new_charge::Int64) where T<:AtomInterface = begin at.formal_charge_ = new_charge end
+setFormalCharge(at::T, new_charge::Int64) where T<:AbstractAtom = begin at.formal_charge_ = new_charge end
 
 Base.show(io::IO, at::Atom) = print(io, "Atom$(at.serial_)[",
     #"$( (isnothing(at.element_)) ? "-" : string(at.element_.symbol_) )|",

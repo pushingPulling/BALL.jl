@@ -13,34 +13,34 @@ abstract type CompositeIterator end
 using Base: SizeUnknown
 import Base.collect
 
-function iterate_over_subtype(target_type::T) where T <: CompositeInterface
+function iterate_over_subtype(target_type::T) where T <: AbstractComposite
     end
 
 mutable struct SystemIterator <:CompositeIterator
-    node::CompositeInterface
+    node::AbstractComposite
 end
 
 mutable struct ChainIterator <: CompositeIterator
-    node::CompositeInterface
+    node::AbstractComposite
 end
 
 mutable struct ResidueIterator <: CompositeIterator
-    node::CompositeInterface
+    node::AbstractComposite
 end
 
 mutable struct AtomIterator <: CompositeIterator
-    node::CompositeInterface
+    node::AbstractComposite
 end
 
 
-const iterator_to_composite = Dict{Type{T} where T<: CompositeIterator,Type{S} where S <: CompositeInterface}(
+const iterator_to_composite = Dict{Type{T} where T<: CompositeIterator,Type{S} where S <: AbstractComposite}(
         SystemIterator => System,
         ChainIterator => Chain,
         ResidueIterator => Residue,
         AtomIterator => Atom
     )
 
-const composite_to_iterator = Dict{Type{T} where T<: CompositeInterface,Type{S} where S <: CompositeIterator}(
+const composite_to_iterator = Dict{Type{T} where T<: AbstractComposite,Type{S} where S <: CompositeIterator}(
         System => SystemIterator,
         Chain => ChainIterator,
         Residue => ResidueIterator,
@@ -59,7 +59,7 @@ Iterator that returns all Nodes of the respective Type in the entire tree.\\
 Preferred functions with enhanced speed: [`collectAtoms`](@ref),[`collectResidues`](@ref),[`collectChains`](@ref),
 [`collectSystems`](@ref)
 Usage:\\
-(`node` is of Type `CompositeInterface` or one of the `KERNEL` types.)
+(`node` is of Type `AbstractComposite` or one of the `KERNEL` types.)
 ```
 for system in SystemIterator(node)  #substiute `SystemIterator` for `ChainIterator`,`ResidueIterator`,`AtomIterator`
     #...
@@ -165,38 +165,38 @@ Base.collect(iter::T) where T<:CompositeIterator = begin
 end
 
 """
-    collectAtoms(node::CompositeInterface)
+    collectAtoms(node::AbstractComposite)
 Collects all the `Atom`s of the subtree rooted in `node`.
 """
-collectAtoms(node::CompositeInterface) = begin
+collectAtoms(node::AbstractComposite) = begin
     recursive_collect(node,Atom)
 end
 
 
 
 """
-    collectResidues(node::CompositeInterface)
+    collectResidues(node::AbstractComposite)
 Collects all the `Residue`s of the subtree rooted in `node`.
 """
-collectResidues(node::CompositeInterface) = begin
+collectResidues(node::AbstractComposite) = begin
     recursive_collect(node,Residue)
 end
 
 
 
 """
-    collectChains(node::CompositeInterface)
+    collectChains(node::AbstractComposite)
 Collects all the `Chain`s of the subtree rooted in `node`.
 """
-collectChains(node::CompositeInterface) = begin
+collectChains(node::AbstractComposite) = begin
     recursive_collect(node,Chain)
 end
 
 
 """
-    collectSystems(node::CompositeInterface)
+    collectSystems(node::AbstractComposite)
 Collects all the `System`s of the subtree rooted in `node`.
 """
-collectSystems(node::CompositeInterface) = begin
+collectSystems(node::AbstractComposite) = begin
     recursive_collect(node,System)
 end

@@ -81,6 +81,7 @@ using Reexport
         using ..CONCEPT
         using ..KERNEL
         using ..STRUCTURE
+        using DataFrames
         include("./QSAR/add_hydrogen_processor.jl")
         include("./QSAR/ring_perception.jl")
     end

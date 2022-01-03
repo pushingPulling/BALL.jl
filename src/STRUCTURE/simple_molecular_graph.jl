@@ -205,7 +205,7 @@ end
 Constructs a `MolecularGraph` mirroring the structure of the tree rooted in `root`.
 The nodes will be of type `typ`.
 """
-MolecularGraph(root::KernelInterface, NodeType::Type{typ} = Node) where typ<:AbstractNode = begin
+MolecularGraph(root::Union{KernelInterface, DataFrameRow}, NodeType::Type{typ} = Node) where typ<:AbstractNode = begin
     graph = MolecularGraph(NodeType)
     for at in eachAtom(root)
         newNode(graph, at)

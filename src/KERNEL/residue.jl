@@ -7,22 +7,22 @@ fragment:
 import .CONCEPT.getName
 export Residue, isAminoAcid, isNTerminal, isHetero
 
-"Represents a Residue (e.g. An Amino-Acid). See also [`CompositeInterface`](@ref)."
-mutable struct Residue <: ResidueInterface
+"Represents a Residue (e.g. An Amino-Acid). See also [`AbstractComposite`](@ref)."
+mutable struct Residue <: AbstractResidue
     name_                                       ::Union{String,Nothing}
     number_of_children_                         ::Union{Int64,Nothing}
-    parent_                                     ::Union{Nothing,CompositeInterface}
-    previous_                                   ::Union{Nothing,CompositeInterface}
-    next_                                       ::Union{Nothing,CompositeInterface}
-    first_child_                                ::Union{Nothing,CompositeInterface}
-    last_child_                                 ::Union{Nothing,CompositeInterface}
+    parent_                                     ::Union{Nothing,AbstractComposite}
+    previous_                                   ::Union{Nothing,AbstractComposite}
+    next_                                       ::Union{Nothing,AbstractComposite}
+    first_child_                                ::Union{Nothing,AbstractComposite}
+    last_child_                                 ::Union{Nothing,AbstractComposite}
     properties_                                 ::Vector{Tuple{String,UInt8}}
     contains_selection_                         ::Union{Bool,Nothing}
     number_of_selected_children_                ::Union{Int64,Nothing}
     number_of_children_containing_selection_    ::Union{Int64,Nothing}
     selection_stamp_                            ::Union{TimeStamp,Nothing}
     modification_stamp_                         ::Union{TimeStamp,Nothing}
-    trait_                                      ::Union{Nothing,CompositeInterface}
+    trait_                                      ::Union{Nothing,AbstractComposite}
     insertion_code_                             ::Union{Char,Nothing}
     is_disordered_                              ::Union{Bool,Nothing}
     res_number_                                 ::Union{Int64,Nothing}
@@ -34,18 +34,18 @@ mutable struct Residue <: ResidueInterface
 
     Residue(name_                                   ::Union{String,Nothing},
             number_of_children_                         ::Union{Int64,Nothing},
-            parent_                                     ::Union{Nothing,CompositeInterface},
-            previous_                                   ::Union{Nothing,CompositeInterface},
-            next_                                       ::Union{Nothing,CompositeInterface},
-            first_child_                                ::Union{Nothing,CompositeInterface},
-            last_child_                                 ::Union{Nothing,CompositeInterface},
+            parent_                                     ::Union{Nothing,AbstractComposite},
+            previous_                                   ::Union{Nothing,AbstractComposite},
+            next_                                       ::Union{Nothing,AbstractComposite},
+            first_child_                                ::Union{Nothing,AbstractComposite},
+            last_child_                                 ::Union{Nothing,AbstractComposite},
             properties_                                 ::Vector{Tuple{String,UInt8}},
             contains_selection_                         ::Union{Bool,Nothing},
             number_of_selected_children_                ::Union{Int64,Nothing},
             number_of_children_containing_selection_    ::Union{Int64,Nothing},
             selection_stamp_                            ::Union{TimeStamp,Nothing},
             modification_stamp_                         ::Union{TimeStamp,Nothing},
-            trait_                                      ::Union{Nothing,CompositeInterface},
+            trait_                                      ::Union{Nothing,AbstractComposite},
             insertion_code_                             ::Union{Char,Nothing},
             is_disordered_                              ::Union{Bool,Nothing},
             res_number_                                 ::Union{Int64,Nothing},

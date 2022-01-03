@@ -7,11 +7,11 @@ ring_perception_processor:
 export SSSR
 
 """
-    SSSR(root::CompositeInterface)
+    SSSR(root::AbstractComposite)
 Calculate the [`SSSR`](https://en.wikipedia.org/wiki/Cycle_basis#Applications) using
  [`minimum_cycle_basis`](@ref)
 """
-SSSR(root::CompositeInterface) = begin
+SSSR(root::Union{KernelInterface, DataFrameRow}) = begin
     if countBonds(root) - countAtoms(root) + 1 < 1
         println("No cycles possible")
         return Vector{Edge}[], Set{Atom}()
@@ -33,10 +33,10 @@ SSSR(root::CompositeInterface) = begin
 
     sssr::Vector{Vector{Edge}} = STRUCTURE.minimum_cycle_basis(graph)
 
-    ring_atoms::Set{Atom} = Set{Atom}()
+    ring_atoms::Set{Union{Atom, DataFrameRow}} = Set{Union{Atom, DataFrameRow}}()
 
     for edge in Iterators.flatten(sssr)
-        push!(ring_atoms, edge.source_.atom_::Atom, edge.target_.atom_::Atom)
+        push!(ring_atoms, edge.source_.atom_::Union{Atom, DataFrameRow}, edge.target_.atom_::Union{Atom, DataFrameRow})
     end
 
     for atom in ring_atoms
@@ -51,4 +51,4 @@ SSSR(root::CompositeInterface) = begin
     return sssr, ring_atoms
 end
 
-SSSR(dfs::DataFrameSystem) = SSSR(first(dfs.systems.system))
+SSSR(dfs::DataFrameSystem) = SSSR(first(dfs.systems))

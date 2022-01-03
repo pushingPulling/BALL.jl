@@ -11,24 +11,24 @@ export
 """
 `Composite` implements the minimum set of fields that `System`, `Chain`, `Residue`, `Atom` must also
 implement. An object of `Composite` is a Node in a hierarchical tree of many types which subtype
-`CompositeInterface`.\n
-See also [`CompositeInterface`](@ref),[`System`](@ref), [`Chain`](@ref), [`Residue`](@ref), [`Atom`](@ref)
+`AbstractComposite`.\n
+See also [`AbstractComposite`](@ref),[`System`](@ref), [`Chain`](@ref), [`Residue`](@ref), [`Atom`](@ref)
 """
-mutable struct Composite <: CompositeInterface
+mutable struct Composite <: AbstractComposite
     name_                                       ::String
     number_of_children_                         ::Int64
-    parent_                                     ::Union{CompositeInterface, Nothing}
-    previous_                                   ::Union{Nothing, CompositeInterface}
-    next_                                       ::Union{CompositeInterface, Nothing}
-    first_child_                                ::Union{CompositeInterface, Nothing}
-    last_child_                                 ::Union{CompositeInterface, Nothing}
+    parent_                                     ::Union{AbstractComposite, Nothing}
+    previous_                                   ::Union{Nothing, AbstractComposite}
+    next_                                       ::Union{AbstractComposite, Nothing}
+    first_child_                                ::Union{AbstractComposite, Nothing}
+    last_child_                                 ::Union{AbstractComposite, Nothing}
     properties_                                 ::UInt64
     contains_selection_                         ::Bool
     number_of_selected_children_                ::Int64
     number_of_children_containing_selection_    ::Int64
     selection_stamp_                            ::Union{TimeStamp,Nothing}
     modification_stamp_                         ::Union{TimeStamp,Nothing}
-    trait_                                      ::Union{Nothing,CompositeInterface}
+    trait_                                      ::Union{Nothing,AbstractComposite}
 
     #default constructor
     Composite() = Composite("",0,nothing,nothing,nothing,nothing,nothing,UInt64(0),false,0,0,nothing,nothing,nothing)
@@ -50,7 +50,7 @@ mutable struct Composite <: CompositeInterface
         number_of_children_containing_selection ::Int64,
         selection_stamp                         ::TimeStamp,
         modification_stamp                      ::TimeStamp,
-        trait                                   ::CompositeInterface
+        trait                                   ::AbstractComposite
 
     ) = new(
             name_,
@@ -72,12 +72,12 @@ end
 #partial constructor: Refs to other Composites and the obj itself
 Composite(
     number_of_children              ::Int64,
-    parent                          ::CompositeInterface,
-    prev                            ::CompositeInterface,
-    next                            ::CompositeInterface,
-    first_child                     ::CompositeInterface,
-    last_child                      ::CompositeInterface,
-    trait                           ::CompositeInterface
+    parent                          ::AbstractComposite,
+    prev                            ::AbstractComposite,
+    next                            ::AbstractComposite,
+    first_child                     ::AbstractComposite,
+    last_child                      ::AbstractComposite,
+    trait                           ::AbstractComposite
 ) = begin
 
     Composite(

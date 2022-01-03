@@ -10,6 +10,9 @@ ramachandranangles(kern::KernelInterface) = begin
     phiangles(kern), psiangles(kern)
 end
 
+ramachandranangles(kern::DataFrameSystem) = begin
+    phiangles(kern), psiangles(kern)
+end
 
 """
     dihedralangle(atom_a, atom_b, atom_c, atom_d)
@@ -20,8 +23,8 @@ The angle between the planes defined by atoms (A, B, C) and (B, C, D) is
 returned in the range -π to π.
 Credit to this function goes to [BioStructures](https://doi.org/10.1093/bioinformatics/btaa502)
 """
-dihedralangle(at_a::Union{DataFrameRow,AtomInterface}, at_b::Union{DataFrameRow,AtomInterface},
-                at_c::Union{DataFrameRow,AtomInterface}, at_d::Union{DataFrameRow,AtomInterface}) =
+dihedralangle(at_a::Union{DataFrameRow,AbstractAtom}, at_b::Union{DataFrameRow,AbstractAtom},
+                at_c::Union{DataFrameRow,AbstractAtom}, at_d::Union{DataFrameRow,AbstractAtom}) =
     dihedralangle(
         coords(at_b) - coords(at_a),
         coords(at_c) - coords(at_b),
@@ -34,21 +37,22 @@ dihedralangle(vec_a::SVector{3,Float64}, vec_b::SVector{3,Float64}, vec_c::SVect
         dot(cross(vec_a, vec_b), cross(vec_b, vec_c)))
 
 
-phiangle(prev_res::Union{T, DataFrameRow}, res::Union{T, DataFrameRow}) where T<: ResidueInterface = begin
+phiangle(prev_res::Union{T, DataFrameRow}, res::Union{T, DataFrameRow}) where T<: AbstractResidue = begin
 
     if !sequentialResidues(prev_res, res)
         return NaN
     end
 
-    child_names_res::Vector{String} = [x.name_ for x in getChildren(res)]
+    children = getChildren(res)
+    child_names_res::Vector{String} = [x.name_ for x in children]
     child_names_prev_res::Vector{String} = [x.name_ for x in getChildren(prev_res)]
     if !in("C", child_names_prev_res) && !all(in(x, child_names_res) for x in ["C", "CA","N"])
         return NaN
     else
-        c_atom_prev::Union{AtomInterface, DataFrameRow} = getChildren(prev_res)[findfirst(x -> x == "C", child_names_prev_res)]
-        n_atom::Union{AtomInterface, DataFrameRow} = getChildren(res)[findfirst(x -> x == "N", child_names_res)]
-        ca_atom::Union{AtomInterface, DataFrameRow} = getChildren(res)[findfirst(x -> x == "CA", child_names_res)]
-        c_atom::Union{AtomInterface, DataFrameRow} = getChildren(res)[findfirst(x -> x == "C", child_names_res)]
+        c_atom_prev::Union{AbstractAtom, DataFrameRow} = getChildren(prev_res)[findfirst(x -> x == "C", child_names_prev_res)]
+        n_atom::Union{AbstractAtom, DataFrameRow} =  children[findfirst(x -> x == "N", child_names_res)]
+        ca_atom::Union{AbstractAtom, DataFrameRow} = children[findfirst(x -> x == "CA", child_names_res)]
+        c_atom::Union{AbstractAtom, DataFrameRow} =  children[findfirst(x -> x == "C", child_names_res)]
         return dihedralangle(c_atom_prev, n_atom, ca_atom, c_atom)
     end
 end
@@ -71,21 +75,39 @@ phiangles(kern::KernelInterface) = begin
     return phi_angles
 end
 
-psiangle(res::Union{T, DataFrameRow}, res_next::Union{T, DataFrameRow}) where T<: ResidueInterface = begin
+phiangles(kern::DataFrameSystem) = begin
+    res_list = eachResidue(kern)
+    if length(res_list) < 2
+        throw(ArgumentError("At least 2 residues required to calculate dihedral angles"))
+    end
+
+    phi_angles = Float64[NaN]
+
+    for i in 2:length(res_list)
+        res = res_list[i]
+        res_prev = res_list[i - 1]
+        push!(phi_angles, phiangle(res_prev, res))
+    end
+
+    return phi_angles
+end
+
+psiangle(res::Union{T, DataFrameRow}, res_next::Union{T, DataFrameRow}) where T<: AbstractResidue = begin
 
     if !sequentialResidues(res, res_next)
         return NaN
     end
 
-    child_names_res::Vector{String} = [x.name_ for x in getChildren(res)]
+    children = getChildren(res)
+    child_names_res::Vector{String} = [x.name_ for x in children]
     child_names_next_res::Vector{String} = [x.name_ for x in getChildren(res_next)]
     if !in("N", child_names_next_res) && !all(in(x, child_names_res) for x in ["C", "CA","N"])
         return NaN
     else
-        n_atom::Union{AtomInterface, DataFrameRow} = getChildren(res)[findfirst(x -> x == "N", child_names_res)]
-        n_atom_next::Union{AtomInterface, DataFrameRow} = getChildren(res_next)[findfirst(x -> x == "N", child_names_next_res)]
-        ca_atom::Union{AtomInterface, DataFrameRow} = getChildren(res)[findfirst(x -> x == "CA", child_names_res)]
-        c_atom::Union{AtomInterface, DataFrameRow} = getChildren(res)[findfirst(x -> x == "C", child_names_res)]
+        n_atom::Union{AbstractAtom, DataFrameRow} = children[findfirst(x -> x == "N", child_names_res)]
+        n_atom_next::Union{AbstractAtom, DataFrameRow} = getChildren(res_next)[findfirst(x -> x == "N", child_names_next_res)]
+        ca_atom::Union{AbstractAtom, DataFrameRow} = children[findfirst(x -> x == "CA", child_names_res)]
+        c_atom::Union{AbstractAtom, DataFrameRow} = children[findfirst(x -> x == "C", child_names_res)]
         return dihedralangle(n_atom, ca_atom, c_atom, n_atom_next)
     end
 end
@@ -113,13 +135,13 @@ end
 
 rmsd(dfs1::DataFrameSystem, dfs2::DataFrameSystem; calphaonly=true) = begin
     if calphaonly
-        atoms1 = filter(x -> getName(x) == "CA", dfs1.atoms)
-        atoms2 = filter(x -> getName(x) == "CA", dfs2.atoms)
+        atoms1 = filter(x -> getName(x) == "CA", dfs1.atoms, view=true)
+        atoms2 = filter(x -> getName(x) == "CA", dfs2.atoms, view=true)
     else
         atoms1 = dfs1.atoms
         atoms2 = dfs2.atoms
     end
-    if length(atoms1) != length(atoms2)
+    if size(atoms1)[1] != size(atoms2)[1]
         throw(ArgumentError("Inputs are of size $(length(atoms1)) and " *
                             "$(length(atoms2)) but must be the same for RMSD"))
     end
@@ -127,13 +149,13 @@ rmsd(dfs1::DataFrameSystem, dfs2::DataFrameSystem; calphaonly=true) = begin
     return sqrt.(dot(diff,diff) / length(diff))
 end
 
-rmsd(comp1::CompositeInterface, comp2::CompositeInterface,calphaonly=true) = begin
+rmsd(comp1::AbstractComposite, comp2::AbstractComposite,calphaonly=true) = begin
     if calphaonly
         atoms1 = filter(x -> getName(x) == "CA", eachAtom(comp1))
         atoms2 = filter(x -> getName(x) == "CA", eachAtom(comp2))
     else
-        atoms1 = dfs1.atoms
-        atoms2 = dfs2.atoms
+        atoms1 = eachAtom(comp1)
+        atoms2 = eachAtom(comp2)
     end
     if length(atoms1) != length(atoms2)
         throw(ArgumentError("Inputs are of size $(length(atoms1)) and " *

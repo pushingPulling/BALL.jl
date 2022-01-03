@@ -34,27 +34,27 @@ end
 """
 Represents chemical Bonds between Atoms.
 """
-mutable struct Bond
-    #CompositeInterface is used as type since we can't use class `Atom`
+mutable struct Bond <: AbstractBond
+    #AbstractComposite is used as type since we can't use class `Atom`
     #because we can't forward reference it or have circular dependencies.
     #this class is only to be used with Atoms
         #the atom with the lower serial number is always the source one
-        source_                      ::AtomInterface
-        target_                      ::AtomInterface
+        source_                      ::AbstractAtom
+        target_                      ::AbstractAtom
         name_                        ::String
         bond_order_                  ::Order
         bond_type_                   ::BondType
         properties_                  ::Vector{Tuple{String,UInt8}}
 
 
-        Bond(x::CompositeInterface, y::CompositeInterface, name::String, bond_order::Order,
+        Bond(x::AbstractComposite, y::AbstractComposite, name::String, bond_order::Order,
                 bond_type::BondType, properties::Vector{Tuple{String,UInt8}}) = begin
             throw(ErrorException("Bonds are only allowed between Atoms. Input: $x , $y."))
         end
 
         Bond(x::T, y::T, name::String, bond_order::Order,
                 bond_type::BondType,
-                properties::Vector{Tuple{String,UInt8}}) where T<: AtomInterface = begin
+                properties::Vector{Tuple{String,UInt8}}) where T<: AbstractAtom = begin
             if x == y
                 throw(ErrorException("Bonds between the same Atom are disallowed. Input: $x , $y."))
             end
@@ -66,7 +66,7 @@ mutable struct Bond
 end
 
 
-Bond(at1::AtomInterface, at2::AtomInterface;
+Bond(at1::AbstractAtom, at2::AbstractAtom;
         name::String ="",
         order::Order = ORDER__ANY, type::BondType = TYPE__UNKNOWN,
         properties::Vector{Tuple{String,UInt8}} = Tuple{String,UInt8}[]) =
@@ -74,11 +74,11 @@ Bond(at1::AtomInterface, at2::AtomInterface;
 
 
 """
-    createBond(at_owner::AtomInterface, at_guest::AtomInterface; name::String ="",
+    createBond(at_owner::AbstractAtom, at_guest::AbstractAtom; name::String ="",
         order::Order = ORDER__ANY, type::BondType = TYPE__UNKNOWN, properties::Vector{Tuple{String,UInt8}})
 Creates a Bond between two already existing Atoms. See `Order` and `BondType` in Bond.jl.
 """
-createBond(at_owner::AtomInterface, at_guest::AtomInterface; name::String ="",
+createBond(at_owner::AbstractAtom, at_guest::AbstractAtom; name::String ="",
         order::Order = ORDER__ANY, type::BondType = TYPE__UNKNOWN,
          properties::Vector{Tuple{String,UInt8}} = Tuple{String,UInt8}[]) = begin
     bondExists(at_owner,at_guest) && return nothing
@@ -89,24 +89,24 @@ createBond(at_owner::AtomInterface, at_guest::AtomInterface; name::String ="",
 end
 
 """
-    bondExists(::AtomInterface, ::AtomInterface)
+    bondExists(::AbstractAtom, ::AbstractAtom)
 Checks if a Bond exists.
 """
-bondExists(at1::AtomInterface, at2::AtomInterface) = begin
+bondExists(at1::AbstractAtom, at2::AbstractAtom) = begin
     return haskey(at1.bonds_,at2)
 end
 
 """
-    deleteBond(::AtomInterface, ::AtomInterface)
+    deleteBond(::AbstractAtom, ::AbstractAtom)
 Deletes a Bond between two `Atom`s. Has no effect if a Bond between the `Atom`s doesn't exist.
 """
-deleteBond(at1::AtomInterface, at2::AtomInterface) = begin
+deleteBond(at1::AbstractAtom, at2::AbstractAtom) = begin
     delete!(at1.bonds_, at2)
     delete!(at2.bonds_, at1)
     return nothing
 end
 
-printBonds(at::AtomInterface, io::IO = Base.stdout) = begin
+printBonds(at::AbstractAtom, io::IO = Base.stdout) = begin
     println(io,"$at has bonds to ",
      join(keys(at.bonds_),", "),". ")
 end

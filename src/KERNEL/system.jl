@@ -11,23 +11,23 @@ export System
 Represents a Biological System. Usual use cases are:\\
 A System holds multiple Chains (represents a Protein).\\
 A System holds multiple Systems (e.g. represents a System of multiple Proteins).\\
-See also [`CompositeInterface`](@ref).
+See also [`AbstractComposite`](@ref).
 """
-mutable struct System <: SystemInterface
+mutable struct System <: AbstractSystem
     name_                                       ::Union{String,Nothing}
     number_of_children_                         ::Union{Int64,Nothing}
-    parent_                                     ::Union{CompositeInterface, Nothing}
-    previous_                                   ::Union{CompositeInterface, Nothing}
-    next_                                       ::Union{CompositeInterface, Nothing}
-    first_child_                                ::Union{CompositeInterface, Nothing}
-    last_child_                                 ::Union{CompositeInterface, Nothing}
+    parent_                                     ::Union{AbstractComposite, Nothing}
+    previous_                                   ::Union{AbstractComposite, Nothing}
+    next_                                       ::Union{AbstractComposite, Nothing}
+    first_child_                                ::Union{AbstractComposite, Nothing}
+    last_child_                                 ::Union{AbstractComposite, Nothing}
     properties_                                 ::Vector{Tuple{String,UInt8}}
     contains_selection_                         ::Union{Bool,Nothing}
     number_of_selected_children_                ::Union{Int64,Nothing}
     number_of_children_containing_selection_    ::Union{Int64,Nothing}
     selection_stamp_                            ::Union{TimeStamp,Nothing}
     modification_stamp_                         ::Union{TimeStamp,Nothing}
-    trait_                                      ::Union{CompositeInterface, Nothing}
+    trait_                                      ::Union{AbstractComposite, Nothing}
     selected_                                   ::Bool
 
     System()= new("",0,nothing,nothing,nothing,nothing,nothing,
@@ -36,18 +36,18 @@ mutable struct System <: SystemInterface
 
     System( name_                                       ::Union{String,Nothing},
             number_of_children_                         ::Union{Int64,Nothing},
-            parent_                                     ::Union{CompositeInterface, Nothing},
-            previous_                                   ::Union{CompositeInterface, Nothing},
-            next_                                       ::Union{CompositeInterface, Nothing},
-            first_child_                                ::Union{CompositeInterface, Nothing},
-            last_child_                                 ::Union{CompositeInterface, Nothing},
+            parent_                                     ::Union{AbstractComposite, Nothing},
+            previous_                                   ::Union{AbstractComposite, Nothing},
+            next_                                       ::Union{AbstractComposite, Nothing},
+            first_child_                                ::Union{AbstractComposite, Nothing},
+            last_child_                                 ::Union{AbstractComposite, Nothing},
             properties_                                 ::Vector{Tuple{String,UInt8}},
             contains_selection_                         ::Union{Bool,Nothing},
             number_of_selected_children_                ::Union{Int64,Nothing},
             number_of_children_containing_selection_    ::Union{Int64,Nothing},
             selection_stamp_                            ::Union{TimeStamp,Nothing},
             modification_stamp_                         ::Union{TimeStamp,Nothing},
-            trait_                                      ::Union{CompositeInterface, Nothing},
+            trait_                                      ::Union{AbstractComposite, Nothing},
             selected_                                   ::Union{Bool,Nothing}
 
             ) = new(name_                                   ,

@@ -9,22 +9,22 @@ import ..CONCEPT.getName
 export
     Chain
 
-"Represents a Chain of Residues. See also [`CompositeInterface`](@ref)"
-mutable struct Chain <: ChainInterface
+"Represents a Chain of Residues. See also [`AbstractComposite`](@ref)"
+mutable struct Chain <: AbstractChain
     id_                                         ::Union{Char, Nothing}
     number_of_children_                         ::Union{Int64,Nothing}
-    parent_                                     ::Union{CompositeInterface, Nothing}
-    previous_                                   ::Union{CompositeInterface, Nothing}
-    next_                                       ::Union{CompositeInterface, Nothing}
-    first_child_                                ::Union{CompositeInterface, Nothing}
-    last_child_                                 ::Union{CompositeInterface, Nothing}
+    parent_                                     ::Union{AbstractComposite, Nothing}
+    previous_                                   ::Union{AbstractComposite, Nothing}
+    next_                                       ::Union{AbstractComposite, Nothing}
+    first_child_                                ::Union{AbstractComposite, Nothing}
+    last_child_                                 ::Union{AbstractComposite, Nothing}
     properties_                                 ::Vector{Tuple{String,UInt8}}
     contains_selection_                         ::Union{Bool,Nothing}
     number_of_selected_children_                ::Union{Int64,Nothing}
     number_of_children_containing_selection_    ::Union{Int64,Nothing}
     selection_stamp_                            ::Union{TimeStamp,Nothing}
     modification_stamp_                         ::Union{TimeStamp,Nothing}
-    trait_                                      ::Union{CompositeInterface, Nothing}
+    trait_                                      ::Union{AbstractComposite, Nothing}
     selected_                                   ::Bool
 
     Chain() = new(nothing,nothing,nothing,nothing,nothing,nothing,nothing,Vector{Tuple{String,UInt8}}(),
@@ -32,18 +32,18 @@ mutable struct Chain <: ChainInterface
 
     Chain(   id_                                         ::Union{Char, Nothing},
              number_of_children_                         ::Union{Int64,Nothing},
-             parent_                                     ::Union{CompositeInterface, Nothing},
-             previous_                                   ::Union{CompositeInterface, Nothing},
-             next_                                       ::Union{CompositeInterface, Nothing},
-             first_child_                                ::Union{CompositeInterface, Nothing},
-             last_child_                                 ::Union{CompositeInterface, Nothing},
+             parent_                                     ::Union{AbstractComposite, Nothing},
+             previous_                                   ::Union{AbstractComposite, Nothing},
+             next_                                       ::Union{AbstractComposite, Nothing},
+             first_child_                                ::Union{AbstractComposite, Nothing},
+             last_child_                                 ::Union{AbstractComposite, Nothing},
              properties_                                 ::Vector{Tuple{String,UInt8}},
              contains_selection_                         ::Union{Bool,Nothing},
              number_of_selected_children_                ::Union{Int64,Nothing},
              number_of_children_containing_selection_    ::Union{Int64,Nothing},
              selection_stamp_                            ::Union{TimeStamp,Nothing},
              modification_stamp_                         ::Union{TimeStamp,Nothing},
-             trait_                                      ::Union{CompositeInterface, Nothing},
+             trait_                                      ::Union{AbstractComposite, Nothing},
              selected_                                   ::Bool
 
          ) = new(   id_                                     ,

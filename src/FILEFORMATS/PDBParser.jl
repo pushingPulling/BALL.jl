@@ -334,6 +334,11 @@ parsePDB(path::String) = begin
         for chain in collectChains(target_system)
             if chain.id_ < 'A'+(i-1)
                 idx = Int(chain.id_) - Int('A') +1
+                if idx < 1      #catch chains with empty/too low char
+                    chain.id_ = 'A'+(i-1)
+                    i += 1
+                    continue
+                end
                 ch_l = collectChains(target_system)[idx]
                 appendSibling(ch_l.last_child_, chain.first_child_)
                 removeChild(chain)
@@ -380,6 +385,7 @@ parsePDB(path::String) = begin
         return root
     end
 
+
     return root
 end
 
@@ -391,6 +397,11 @@ Constructs a `System` from a PDB file at `path`.
 """
 function System(path::String)
     if endswith(path, ".pdb")
-       return parsePDB(path)::System
+        root = parsePDB(path)::System
+        for sys in collectSystems(root)
+            sys.number_of_children_ = countChildren(sys)
+
+        end
+        return root
     end
 end

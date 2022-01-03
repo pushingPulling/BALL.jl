@@ -54,7 +54,7 @@ end
 function populateTree(Atoms::Vector{Atom}, Elements::Vector{Element})
     count = 2
     root = System()
-    stack = Vector{CompositeInterface}()
+    stack = Vector{AbstractComposite}()
     NUM_CHILDREN = 10
     node_counter = 0
 

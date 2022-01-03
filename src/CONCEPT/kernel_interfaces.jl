@@ -1,30 +1,36 @@
 #=
-AtomInterface:
+AbstractAtom:
 - Julia version: 
 - Author: Dan
 - Date: 2021-07-27
 =#
-export AtomInterface, ResidueInterface, ChainInterface, SystemInterface
+export AbstractAtom, AbstractResidue, AbstractChain, AbstractSystem, AbstractBond
 """
-Abstract Type for Atom Classes.
+Abstract Type for Atom Types.
 See Also [`Atom`](@ref)
 """
-abstract type AtomInterface <: CompositeInterface end
+abstract type AbstractAtom <: AbstractComposite end
 
 """
-Abstract Type for Atom Classes.
+Abstract Type for Atom Types.
 See Also [`Atom`](@ref)
 """
-abstract type ResidueInterface <: CompositeInterface end
+abstract type AbstractResidue <: AbstractComposite end
 
 """
-Abstract Type for Atom Classes.
+Abstract Type for Atom Types.
 See Also [`Atom`](@ref)
 """
-abstract type ChainInterface <: CompositeInterface end
+abstract type AbstractChain <: AbstractComposite end
 
 """
-Abstract Type for Atom Classes.
+Abstract Type for Atom Types.
 See Also [`Atom`](@ref)
 """
-abstract type SystemInterface <: CompositeInterface end
+abstract type AbstractSystem <: AbstractComposite end
+
+"""
+Abstract Type for Bond Types.
+See Also [`Bond`](@ref)
+"""
+abstract type AbstractBond <: AbstractComposite end
