@@ -7,6 +7,7 @@ BALL:
 module BALL
 using Reexport
         #require bijections, DataFrames
+    using InteractiveUtils
     module COMMON
         include("./COMMON/global.jl")
         include("./COMMON/common.jl")
@@ -24,6 +25,7 @@ using Reexport
     module KERNEL
         using ..COMMON
         using ..CONCEPT
+        using MacroTools
         using Bijections
         using StaticArrays
         using DataFrames
@@ -35,8 +37,11 @@ using Reexport
         include("./KERNEL/residue.jl")
         include("./KERNEL/system.jl")
         include("./KERNEL/composite_iterator.jl")
-        include("./KERNEL/dataframesystem.jl")
-        include("./KERNEL/getter_setter.jl")
+        include("./KERNEL/bioframe.jl")         #definitions
+        include("./KERNEL/dataframesystem.jl")  #definiton and construc
+        include("./KERNEL/getter_setter.jl")    #getterset
+        include("./KERNEL/bioframe_interface.jl")# next prev and funcs
+        include("./KERNEL/dataframesystem_interface.jl")#next prev and funcs
         include("./KERNEL/aux_functions.jl")
     end
 

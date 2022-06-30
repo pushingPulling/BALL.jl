@@ -80,7 +80,7 @@ parseAtomLine(params::AtomLineParams, line::String) = begin
     result = Atom(params.name,params.x,params.y,params.z,params.elem,params.charge,
                     params.occupancy,params.serial,params.temp_factor)::Atom
     if startswith(line,"HET")
-        setProperty(result,("hetero",true))
+        setProperty(result,(:hetero,true))
     end
 
     return result
@@ -272,7 +272,7 @@ parsePDB(path::String) = begin
                     latest_residue.name_ = record_residue_name
                     latest_residue.is_hetero_ = false
                     if latest_residue.name_ in Amino_Acids
-                        setProperty(latest_residue, ("amino_acid",true))
+                        setProperty(latest_residue, (:amino_acid,true))
                     end
                     appendChild(latest_chain, latest_residue)
 

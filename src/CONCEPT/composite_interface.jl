@@ -15,6 +15,12 @@ See also [`System`](@ref), [`Chain`](@ref), [`Residue`](@ref), [`Atom`](@ref).
 """
 abstract type AbstractComposite <: KernelInterface end
 
+parent(t::T) where T <: AbstractComposite = t.parent_          
+prev(t::T) where T <: AbstractComposite = t.previous_          
+next(t::T) where T <: AbstractComposite = t.next_              
+firstChild(t::T) where T <: AbstractComposite = t.first_child_       
+lastChild(t::T) where T <: AbstractComposite = t.last_child_        
+
 
 #=  Preorder, Neutral-Left-Right iterator
     (first current object, then DFS-like left subtree,
@@ -419,7 +425,7 @@ end
     hasProperty(comp::AbstractComposite, property::String)
 Checks if `comp` has property `property`.
 """
-hasProperty(comp::AbstractComposite, property::String) = begin
+hasProperty(comp::AbstractComposite, property::Symbol) = begin
     if any([property == x[1] for x in getProperties(comp) ])
        return true
     end
@@ -430,9 +436,9 @@ end
     getProperty(comp::AbstractComposite, property::String)
 Gets value of `property` if set, else `nothing`.
 """
-getProperty(comp::AbstractComposite, property::String) = begin
+getProperty(comp::AbstractComposite, property::Symbol) = begin
     if hasProperty(comp,property)
-        index = findfirst((x::Tuple{String,UInt8})-> property == x[1], getProperties(comp))
+        index = findfirst((x::Tuple{Symbol,Any})-> property == x[1], getProperties(comp))
         return getProperties(comp)[index][2]
     end
     return nothing
@@ -442,14 +448,14 @@ end
     setProperty(::AbstractComposite, ::Tuple{String,UInt8})
 Setter. Deletes old property if needed.
 """
-setProperty(comp::AbstractComposite, property::Tuple{String,UInt8}) = begin
+setProperty(comp::AbstractComposite, property::Tuple{Symbol,Any}) = begin
     if hasProperty(comp,property[1])
-        index = findfirst((x::Tuple{String,UInt8})-> property[1] == x[1], getProperties(comp))
+        index = findfirst((x::Tuple{Symbol,Any})-> property[1] == x[1], getProperties(comp))
         deleteat!(getProperties(comp), index)
     end
     push!(comp.properties_, property)
 end
-setProperty(comp::AbstractComposite, property::Tuple{String,Bool}) = setProperty(comp,(property[1],UInt8(property[2])))
+#setProperty(comp::AbstractComposite, property::Tuple{String,Bool}) = setProperty(comp,(property[1],property[2]))
 
 """
     getFirstAtom(comp::AbstractComposite)

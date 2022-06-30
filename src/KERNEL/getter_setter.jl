@@ -51,11 +51,11 @@ names = ["parent_", "previous_", "next_","first_child_",
 
 
 types = [
-    "Union{Nothing,DataFrameRow}",
-    "Union{Nothing,DataFrameRow}",
-    "Union{Nothing,DataFrameRow}",
-    "Union{DataFrameRow, Nothing}",
-    "Union{DataFrameRow, Nothing}",
+    "Union{Nothing,DataFrames.DataFrameRow}",
+    "Union{Nothing,DataFrames.DataFrameRow}",
+    "Union{Nothing,DataFrames.DataFrameRow}",
+    "Union{DataFrames.DataFrameRow, Nothing}",
+    "Union{DataFrames.DataFrameRow, Nothing}",
     "Union{String,Nothing}",
     "Union{String,Nothing}",
     "Union{Element,Nothing}",
@@ -79,7 +79,7 @@ types = [
     "Union{Int64,Nothing}",
     "Union{TimeStamp,Nothing}",
     "Union{TimeStamp,Nothing}",
-    "Union{DataFrameRow, Nothing}",
+    "Union{DataFrames.DataFrameRow, Nothing}",
     "Union{Char,Nothing}",
     "Union{Bool,Nothing}",
     "Union{Int64,Nothing}",
@@ -94,9 +94,9 @@ for (name, type) in zip(names,types)
 
     print("set$(fname), ")
     #println("\"\"\" ")
-    #println("    set$(fname)(df_row::DataFrameRow, value::$(type)")
+    #println("    set$(fname)(df_row::DataFrames.DataFrameRow, value::$(type)")
     #println("\"\"\" ")
-    #println("set$(fname)(df_row::DataFrameRow, value::$(type) = begin df_row.$(name) = value end")
+    #println("set$(fname)(df_row::DataFrames.DataFrameRow, value::$(type) = begin df_row.$(name) = value end")
     #println()
     #println()
 end
@@ -510,63 +510,63 @@ setId(comp::AbstractComposite, value::Union{Char, Nothing}) = begin comp.id_ = v
 
 
 
-#----------------DATAFRAMEROW getter setter-----------------------
+#----------------DataFrames.DataFrameRow getter setter-----------------------
 
 
 """
-    getPrevious(df_row::DataFrameRow)
+    getPrevious(df_row::DataFrames.DataFrameRow)
 """
-getPrevious(df_row::DataFrameRow) = df_row.previous_
+getPrevious(df_row::DataFrames.DataFrameRow) = df_row.previous_
 
 
-
-
-"""
-    getName(df_row::DataFrameRow)
-"""
-getName(df_row::DataFrameRow) = df_row[1]
 
 
 """
-    getTypeName(df_row::DataFrameRow)
+    getName(df_row::DataFrames.DataFrameRow)
 """
-getTypeName(df_row::DataFrameRow) = df_row.type_name_
+getName(df_row::DataFrames.DataFrameRow) = df_row[1]
 
 
 """
-    getElement(df_row::DataFrameRow)
+    getTypeName(df_row::DataFrames.DataFrameRow)
 """
-getElement(df_row::DataFrameRow) = df_row.element_
+getTypeName(df_row::DataFrames.DataFrameRow) = df_row.type_name_
 
 
 """
-    getRadius(df_row::DataFrameRow)
+    getElement(df_row::DataFrames.DataFrameRow)
 """
-getRadius(df_row::DataFrameRow) = df_row.radius_
+getElement(df_row::DataFrames.DataFrameRow) = df_row.element_
 
 
 """
-    getType(df_row::DataFrameRow)
+    getRadius(df_row::DataFrames.DataFrameRow)
 """
-getType(df_row::DataFrameRow) = df_row.type_
+getRadius(df_row::DataFrames.DataFrameRow) = df_row.radius_
 
 
 """
-    getNumberOfBonds(df_row::DataFrameRow)
+    getType(df_row::DataFrames.DataFrameRow)
 """
-getNumberOfBonds(df_row::DataFrameRow) = df_row.number_of_bonds_
+getType(df_row::DataFrames.DataFrameRow) = df_row.type_
 
 
 """
-    getFormalCharge(df_row::DataFrameRow)
+    getNumberOfBonds(df_row::DataFrames.DataFrameRow)
 """
-getFormalCharge(df_row::DataFrameRow) = df_row.formal_charge_
+getNumberOfBonds(df_row::DataFrames.DataFrameRow) = df_row.number_of_bonds_
 
 
 """
-    getPosition(df_row::DataFrameRow)
+    getFormalCharge(df_row::DataFrames.DataFrameRow)
 """
-getPosition(df_row::DataFrameRow) = df_row.position_
+getFormalCharge(df_row::DataFrames.DataFrameRow) = df_row.formal_charge_
+
+
+"""
+    getPosition(df_row::DataFrames.DataFrameRow)
+"""
+getPosition(df_row::DataFrames.DataFrameRow) = df_row.position_
 
 """
     getPosition(df::DataFrame)
@@ -581,325 +581,325 @@ getPosition(df::SubDataFrame) = df.position_
 
 
 """
-    getCharge(df_row::DataFrameRow)
+    getCharge(df_row::DataFrames.DataFrameRow)
 """
-getCharge(df_row::DataFrameRow) = df_row.charge_
+getCharge(df_row::DataFrames.DataFrameRow) = df_row.charge_
 
 
 """
-    getVelocity(df_row::DataFrameRow)
+    getVelocity(df_row::DataFrames.DataFrameRow)
 """
-getVelocity(df_row::DataFrameRow) = df_row.velocity_
+getVelocity(df_row::DataFrames.DataFrameRow) = df_row.velocity_
 
 
 """
-    getForce(df_row::DataFrameRow)
+    getForce(df_row::DataFrames.DataFrameRow)
 """
-getForce(df_row::DataFrameRow) = df_row.force_
+getForce(df_row::DataFrames.DataFrameRow) = df_row.force_
 
 
 """
-    getOccupancy(df_row::DataFrameRow)
+    getOccupancy(df_row::DataFrames.DataFrameRow)
 """
-getOccupancy(df_row::DataFrameRow) = df_row.occupancy_
+getOccupancy(df_row::DataFrames.DataFrameRow) = df_row.occupancy_
 
 
 """
-    getSerial(df_row::DataFrameRow)
+    getSerial(df_row::DataFrames.DataFrameRow)
 """
-getSerial(df_row::DataFrameRow) = df_row.serial_
+getSerial(df_row::DataFrames.DataFrameRow) = df_row.serial_
 
 
 """
-    getTempFactor(df_row::DataFrameRow)
+    getTempFactor(df_row::DataFrames.DataFrameRow)
 """
-getTempFactor(df_row::DataFrameRow) = df_row.temp_factor_
+getTempFactor(df_row::DataFrames.DataFrameRow) = df_row.temp_factor_
 
 
 
 
 """
-    getProperties(df_row::DataFrameRow)
+    getProperties(df_row::DataFrames.DataFrameRow)
 """
-getProperties(df_row::DataFrameRow) = df_row.properties_
+getProperties(df_row::DataFrames.DataFrameRow) = df_row.properties_
 
 
 """
-    getNumberOfChildren(df_row::DataFrameRow)
+    getNumberOfChildren(df_row::DataFrames.DataFrameRow)
 """
-getNumberOfChildren(df_row::DataFrameRow) = df_row.number_of_children_
+getNumberOfChildren(df_row::DataFrames.DataFrameRow) = df_row.number_of_children_
 
 
 """
-    getContainsSelection(df_row::DataFrameRow)
+    getContainsSelection(df_row::DataFrames.DataFrameRow)
 """
-getContainsSelection(df_row::DataFrameRow) = df_row.contains_selection_
+getContainsSelection(df_row::DataFrames.DataFrameRow) = df_row.contains_selection_
 
 
 """
-    getNumberOfSelectedChildren(df_row::DataFrameRow)
+    getNumberOfSelectedChildren(df_row::DataFrames.DataFrameRow)
 """
-getNumberOfSelectedChildren(df_row::DataFrameRow) = df_row.number_of_selected_children_
+getNumberOfSelectedChildren(df_row::DataFrames.DataFrameRow) = df_row.number_of_selected_children_
 
 
 """
-    getNumberOfChildrenContainingSelection(df_row::DataFrameRow)
+    getNumberOfChildrenContainingSelection(df_row::DataFrames.DataFrameRow)
 """
-getNumberOfChildrenContainingSelection(df_row::DataFrameRow) = df_row.number_of_children_containing_selection_
+getNumberOfChildrenContainingSelection(df_row::DataFrames.DataFrameRow) = df_row.number_of_children_containing_selection_
 
 
 """
-    getSelectionStamp(df_row::DataFrameRow)
+    getSelectionStamp(df_row::DataFrames.DataFrameRow)
 """
-getSelectionStamp(df_row::DataFrameRow) = df_row.selection_stamp_
+getSelectionStamp(df_row::DataFrames.DataFrameRow) = df_row.selection_stamp_
 
 
 """
-    getModificationStamp(df_row::DataFrameRow)
+    getModificationStamp(df_row::DataFrames.DataFrameRow)
 """
-getModificationStamp(df_row::DataFrameRow) = df_row.modification_stamp_
+getModificationStamp(df_row::DataFrames.DataFrameRow) = df_row.modification_stamp_
 
 
 
 
 """
-    getInsertionCode(df_row::DataFrameRow)
+    getInsertionCode(df_row::DataFrames.DataFrameRow)
 """
-getInsertionCode(df_row::DataFrameRow) = df_row.insertion_code_
+getInsertionCode(df_row::DataFrames.DataFrameRow) = df_row.insertion_code_
 
 
 """
-    getIsDisordered(df_row::DataFrameRow)
+    getIsDisordered(df_row::DataFrames.DataFrameRow)
 """
-getIsDisordered(df_row::DataFrameRow) = df_row.is_disordered_
+getIsDisordered(df_row::DataFrames.DataFrameRow) = df_row.is_disordered_
 
 
 """
-    getResNumber(df_row::DataFrameRow)
+    getResNumber(df_row::DataFrames.DataFrameRow)
 """
-getResNumber(df_row::DataFrameRow) = df_row.res_number_
+getResNumber(df_row::DataFrames.DataFrameRow) = df_row.res_number_
 
 
 """
-    getIsHetero(df_row::DataFrameRow)
+    getIsHetero(df_row::DataFrames.DataFrameRow)
 """
-getIsHetero(df_row::DataFrameRow) = df_row.is_hetero_
+getIsHetero(df_row::DataFrames.DataFrameRow) = df_row.is_hetero_
 
 
 """
-    getSelected(df_row::DataFrameRow)
+    getSelected(df_row::DataFrames.DataFrameRow)
 """
-getSelected(df_row::DataFrameRow) = df_row.selected_
+getSelected(df_row::DataFrames.DataFrameRow) = df_row.selected_
 
 
 """
-    getId(df_row::DataFrameRow)
+    getId(df_row::DataFrames.DataFrameRow)
 """
-getId(df_row::DataFrameRow) = df_row.id_
+getId(df_row::DataFrames.DataFrameRow) = df_row.id_
 
 
 """
-    setParent(df_row::DataFrameRow, value::Union{Nothing,DataFrameRow}
+    setParent(df_row::DataFrames.DataFrameRow, value::Union{Nothing,DataFrames.DataFrameRow}
 """
-setParent(df_row::DataFrameRow, value::Union{Nothing,DataFrameRow}) = begin df_row.parent_ = value end
+setParent(df_row::DataFrames.DataFrameRow, value::Union{Nothing,DataFrames.DataFrameRow}) = begin df_row.parent_ = value end
 
 
 """
-    setPrevious(df_row::DataFrameRow, value::Union{Nothing,DataFrameRow}
+    setPrevious(df_row::DataFrames.DataFrameRow, value::Union{Nothing,DataFrames.DataFrameRow}
 """
-setPrevious(df_row::DataFrameRow, value::Union{Nothing,DataFrameRow}) = begin df_row.previous_ = value end
+setPrevious(df_row::DataFrames.DataFrameRow, value::Union{Nothing,DataFrames.DataFrameRow}) = begin df_row.previous_ = value end
 
 
 """
-    setNext(df_row::DataFrameRow, value::Union{Nothing,DataFrameRow}
+    setNext(df_row::DataFrames.DataFrameRow, value::Union{Nothing,DataFrames.DataFrameRow}
 """
-setNext(df_row::DataFrameRow, value::Union{Nothing,DataFrameRow}) = begin df_row.next_ = value end
+setNext(df_row::DataFrames.DataFrameRow, value::Union{Nothing,DataFrames.DataFrameRow}) = begin df_row.next_ = value end
 
 
 """
-    setFirstChild(df_row::DataFrameRow, value::Union{DataFrameRow, Nothing}
+    setFirstChild(df_row::DataFrames.DataFrameRow, value::Union{DataFrames.DataFrameRow, Nothing}
 """
-setFirstChild(df_row::DataFrameRow, value::Union{DataFrameRow, Nothing}) = begin df_row.first_child_ = value end
+setFirstChild(df_row::DataFrames.DataFrameRow, value::Union{DataFrames.DataFrameRow, Nothing}) = begin df_row.first_child_ = value end
 
 
 """
-    setLastChild(df_row::DataFrameRow, value::Union{DataFrameRow, Nothing}
+    setLastChild(df_row::DataFrames.DataFrameRow, value::Union{DataFrames.DataFrameRow, Nothing}
 """
-setLastChild(df_row::DataFrameRow, value::Union{DataFrameRow, Nothing}) = begin df_row.last_child_ = value end
+setLastChild(df_row::DataFrames.DataFrameRow, value::Union{DataFrames.DataFrameRow, Nothing}) = begin df_row.last_child_ = value end
 
 
 """
-    setName(df_row::DataFrameRow, value::Union{String,Nothing}
+    setName(df_row::DataFrames.DataFrameRow, value::Union{String,Nothing}
 """
-setName(df_row::DataFrameRow, value::Union{String,Nothing}) = begin df_row.name_ = value end
+setName(df_row::DataFrames.DataFrameRow, value::Union{String,Nothing}) = begin df_row.name_ = value end
 
 
 """
-    setTypeName(df_row::DataFrameRow, value::Union{String,Nothing}
+    setTypeName(df_row::DataFrames.DataFrameRow, value::Union{String,Nothing}
 """
-setTypeName(df_row::DataFrameRow, value::Union{String,Nothing}) = begin df_row.type_name_ = value end
+setTypeName(df_row::DataFrames.DataFrameRow, value::Union{String,Nothing}) = begin df_row.type_name_ = value end
 
 
 """
-    setElement(df_row::DataFrameRow, value::Union{Element,Nothing}
+    setElement(df_row::DataFrames.DataFrameRow, value::Union{Element,Nothing}
 """
-setElement(df_row::DataFrameRow, value::Union{Element,Nothing}) = begin df_row.element_ = value end
+setElement(df_row::DataFrames.DataFrameRow, value::Union{Element,Nothing}) = begin df_row.element_ = value end
 
 
 """
-    setRadius(df_row::DataFrameRow, value::Union{Float64,Nothing}
+    setRadius(df_row::DataFrames.DataFrameRow, value::Union{Float64,Nothing}
 """
-setRadius(df_row::DataFrameRow, value::Union{Float64,Nothing}) = begin df_row.radius_ = value end
+setRadius(df_row::DataFrames.DataFrameRow, value::Union{Float64,Nothing}) = begin df_row.radius_ = value end
 
 
 """
-    setType(df_row::DataFrameRow, value::Union{UInt8,Nothing}
+    setType(df_row::DataFrames.DataFrameRow, value::Union{UInt8,Nothing}
 """
-setType(df_row::DataFrameRow, value::Union{UInt8,Nothing}) = begin df_row.type_ = value end
+setType(df_row::DataFrames.DataFrameRow, value::Union{UInt8,Nothing}) = begin df_row.type_ = value end
 
 
 """
-    setNumberOfBonds(df_row::DataFrameRow, value::Union{UInt8,Nothing}
+    setNumberOfBonds(df_row::DataFrames.DataFrameRow, value::Union{UInt8,Nothing}
 """
-setNumberOfBonds(df_row::DataFrameRow, value::Union{UInt8,Nothing}) = begin df_row.number_of_bonds_ = value end
+setNumberOfBonds(df_row::DataFrames.DataFrameRow, value::Union{UInt8,Nothing}) = begin df_row.number_of_bonds_ = value end
 
 
 """
-    setFormalCharge(df_row::DataFrameRow, value::Union{Int64,Nothing}
+    setFormalCharge(df_row::DataFrames.DataFrameRow, value::Union{Int64,Nothing}
 """
-setFormalCharge(df_row::DataFrameRow, value::Union{Int64,Nothing}) = begin df_row.formal_charge_ = value end
+setFormalCharge(df_row::DataFrames.DataFrameRow, value::Union{Int64,Nothing}) = begin df_row.formal_charge_ = value end
 
 
 """
-    setPosition(df_row::DataFrameRow, value::Union{SVector{3,Float64},Nothing}
+    setPosition(df_row::DataFrames.DataFrameRow, value::Union{SVector{3,Float64},Nothing}
 """
-setPosition(df_row::DataFrameRow, value::Union{SVector{3,Float64},Nothing}) = begin df_row.position_ = value end
+setPosition(df_row::DataFrames.DataFrameRow, value::Union{SVector{3,Float64},Nothing}) = begin df_row.position_ = value end
 
 
 """
-    setCharge(df_row::DataFrameRow, value::Union{Float64,Nothing}
+    setCharge(df_row::DataFrames.DataFrameRow, value::Union{Float64,Nothing}
 """
-setCharge(df_row::DataFrameRow, value::Union{Float64,Nothing}) = begin df_row.charge_ = value end
+setCharge(df_row::DataFrames.DataFrameRow, value::Union{Float64,Nothing}) = begin df_row.charge_ = value end
 
 
 """
-    setVelocity(df_row::DataFrameRow, value::Union{SVector{3,Float64},Nothing}
+    setVelocity(df_row::DataFrames.DataFrameRow, value::Union{SVector{3,Float64},Nothing}
 """
-setVelocity(df_row::DataFrameRow, value::Union{SVector{3,Float64},Nothing}) = begin df_row.velocity_ = value end
+setVelocity(df_row::DataFrames.DataFrameRow, value::Union{SVector{3,Float64},Nothing}) = begin df_row.velocity_ = value end
 
 
 """
-    setForce(df_row::DataFrameRow, value::Union{SVector{3,Float64},Nothing}
+    setForce(df_row::DataFrames.DataFrameRow, value::Union{SVector{3,Float64},Nothing}
 """
-setForce(df_row::DataFrameRow, value::Union{SVector{3,Float64},Nothing}) = begin df_row.force_ = value end
+setForce(df_row::DataFrames.DataFrameRow, value::Union{SVector{3,Float64},Nothing}) = begin df_row.force_ = value end
 
 
 """
-    setOccupancy(df_row::DataFrameRow, value::Union{Float64, Nothing}
+    setOccupancy(df_row::DataFrames.DataFrameRow, value::Union{Float64, Nothing}
 """
-setOccupancy(df_row::DataFrameRow, value::Union{Float64, Nothing}) = begin df_row.occupancy_ = value end
+setOccupancy(df_row::DataFrames.DataFrameRow, value::Union{Float64, Nothing}) = begin df_row.occupancy_ = value end
 
 
 """
-    setSerial(df_row::DataFrameRow, value::Union{Int64,Nothing}
+    setSerial(df_row::DataFrames.DataFrameRow, value::Union{Int64,Nothing}
 """
-setSerial(df_row::DataFrameRow, value::Union{Int64,Nothing}) = begin df_row.serial_ = value end
+setSerial(df_row::DataFrames.DataFrameRow, value::Union{Int64,Nothing}) = begin df_row.serial_ = value end
 
 
 """
-    setTempFactor(df_row::DataFrameRow, value::Union{Float64,Nothing}
+    setTempFactor(df_row::DataFrames.DataFrameRow, value::Union{Float64,Nothing}
 """
-setTempFactor(df_row::DataFrameRow, value::Union{Float64,Nothing}) = begin df_row.temp_factor_ = value end
+setTempFactor(df_row::DataFrames.DataFrameRow, value::Union{Float64,Nothing}) = begin df_row.temp_factor_ = value end
 
 
 
 """
-    setBonds(df_row::DataFrameRow, value::Dict{Atom, Bond}
+    setBonds(df_row::DataFrames.DataFrameRow, value::Dict{Atom, Bond}
 """
-setBonds(df_row::DataFrameRow, value::Dict{Atom, Bond}) = begin df_row.bonds_ = value end
+setBonds(df_row::DataFrames.DataFrameRow, value::Dict{Atom, Bond}) = begin df_row.bonds_ = value end
 
 
 """
-    setProperties(df_row::DataFrameRow, value::Vector{Tuple{String,UInt8}}
+    setProperties(df_row::DataFrames.DataFrameRow, value::Vector{Tuple{String,UInt8}}
 """
-setProperties(df_row::DataFrameRow, value::Vector{Tuple{String,UInt8}}) = begin df_row.properties_ = value end
+setProperties(df_row::DataFrames.DataFrameRow, value::Vector{Tuple{String,UInt8}}) = begin df_row.properties_ = value end
 
 
 """
-    setNumberOfChildren(df_row::DataFrameRow, value::Union{Int64,Nothing}
+    setNumberOfChildren(df_row::DataFrames.DataFrameRow, value::Union{Int64,Nothing}
 """
-setNumberOfChildren(df_row::DataFrameRow, value::Union{Int64,Nothing}) = begin df_row.number_of_children_ = value end
+setNumberOfChildren(df_row::DataFrames.DataFrameRow, value::Union{Int64,Nothing}) = begin df_row.number_of_children_ = value end
 
 
 """
-    setContainsSelection(df_row::DataFrameRow, value::Union{Bool,Nothing}
+    setContainsSelection(df_row::DataFrames.DataFrameRow, value::Union{Bool,Nothing}
 """
-setContainsSelection(df_row::DataFrameRow, value::Union{Bool,Nothing}) = begin df_row.contains_selection_ = value end
+setContainsSelection(df_row::DataFrames.DataFrameRow, value::Union{Bool,Nothing}) = begin df_row.contains_selection_ = value end
 
 
 """
-    setNumberOfSelectedChildren(df_row::DataFrameRow, value::Union{Int64,Nothing}
+    setNumberOfSelectedChildren(df_row::DataFrames.DataFrameRow, value::Union{Int64,Nothing}
 """
-setNumberOfSelectedChildren(df_row::DataFrameRow, value::Union{Int64,Nothing}) = begin df_row.number_of_selected_children_ = value end
+setNumberOfSelectedChildren(df_row::DataFrames.DataFrameRow, value::Union{Int64,Nothing}) = begin df_row.number_of_selected_children_ = value end
 
 
 """
-    setNumberOfChildrenContainingSelection(df_row::DataFrameRow, value::Union{Int64,Nothing}
+    setNumberOfChildrenContainingSelection(df_row::DataFrames.DataFrameRow, value::Union{Int64,Nothing}
 """
-setNumberOfChildrenContainingSelection(df_row::DataFrameRow, value::Union{Int64,Nothing}) = begin df_row.number_of_children_containing_selection_ = value end
+setNumberOfChildrenContainingSelection(df_row::DataFrames.DataFrameRow, value::Union{Int64,Nothing}) = begin df_row.number_of_children_containing_selection_ = value end
 
 
 """
-    setSelectionStamp(df_row::DataFrameRow, value::Union{TimeStamp,Nothing}
+    setSelectionStamp(df_row::DataFrames.DataFrameRow, value::Union{TimeStamp,Nothing}
 """
-setSelectionStamp(df_row::DataFrameRow, value::Union{TimeStamp,Nothing}) = begin df_row.selection_stamp_ = value end
+setSelectionStamp(df_row::DataFrames.DataFrameRow, value::Union{TimeStamp,Nothing}) = begin df_row.selection_stamp_ = value end
 
 
 """
-    setModificationStamp(df_row::DataFrameRow, value::Union{TimeStamp,Nothing}
+    setModificationStamp(df_row::DataFrames.DataFrameRow, value::Union{TimeStamp,Nothing}
 """
-setModificationStamp(df_row::DataFrameRow, value::Union{TimeStamp,Nothing}) = begin df_row.modification_stamp_ = value end
+setModificationStamp(df_row::DataFrames.DataFrameRow, value::Union{TimeStamp,Nothing}) = begin df_row.modification_stamp_ = value end
 
 
 """
-    setTrait(df_row::DataFrameRow, value::Union{DataFrameRow, Nothing}
+    setTrait(df_row::DataFrames.DataFrameRow, value::Union{DataFrames.DataFrameRow, Nothing}
 """
-setTrait(df_row::DataFrameRow, value::Union{DataFrameRow, Nothing}) = begin df_row.trait_ = value end
+setTrait(df_row::DataFrames.DataFrameRow, value::Union{DataFrames.DataFrameRow, Nothing}) = begin df_row.trait_ = value end
 
 
 """
-    setInsertionCode(df_row::DataFrameRow, value::Union{Char,Nothing}
+    setInsertionCode(df_row::DataFrames.DataFrameRow, value::Union{Char,Nothing}
 """
-setInsertionCode(df_row::DataFrameRow, value::Union{Char,Nothing}) = begin df_row.insertion_code_ = value end
+setInsertionCode(df_row::DataFrames.DataFrameRow, value::Union{Char,Nothing}) = begin df_row.insertion_code_ = value end
 
 
 """
-    setIsDisordered(df_row::DataFrameRow, value::Union{Bool,Nothing}
+    setIsDisordered(df_row::DataFrames.DataFrameRow, value::Union{Bool,Nothing}
 """
-setIsDisordered(df_row::DataFrameRow, value::Union{Bool,Nothing}) = begin df_row.is_disordered_ = value end
+setIsDisordered(df_row::DataFrames.DataFrameRow, value::Union{Bool,Nothing}) = begin df_row.is_disordered_ = value end
 
 
 """
-    setResNumber(df_row::DataFrameRow, value::Union{Int64,Nothing}
+    setResNumber(df_row::DataFrames.DataFrameRow, value::Union{Int64,Nothing}
 """
-setResNumber(df_row::DataFrameRow, value::Union{Int64,Nothing}) = begin df_row.res_number_ = value end
+setResNumber(df_row::DataFrames.DataFrameRow, value::Union{Int64,Nothing}) = begin df_row.res_number_ = value end
 
 
 """
-    setIsHetero(df_row::DataFrameRow, value::Union{Bool,Nothing}
+    setIsHetero(df_row::DataFrames.DataFrameRow, value::Union{Bool,Nothing}
 """
-setIsHetero(df_row::DataFrameRow, value::Union{Bool,Nothing}) = begin df_row.is_hetero_ = value end
+setIsHetero(df_row::DataFrames.DataFrameRow, value::Union{Bool,Nothing}) = begin df_row.is_hetero_ = value end
 
 
 """
-    setSelected(df_row::DataFrameRow, value::Bool
+    setSelected(df_row::DataFrames.DataFrameRow, value::Bool
 """
-setSelected(df_row::DataFrameRow, value::Bool) = begin df_row.selected_ = value end
+setSelected(df_row::DataFrames.DataFrameRow, value::Bool) = begin df_row.selected_ = value end
 
 
 """
-    setId(df_row::DataFrameRow, value::Union{Char, Nothing}
+    setId(df_row::DataFrames.DataFrameRow, value::Union{Char, Nothing}
 """
-setId(df_row::DataFrameRow, value::Union{Char, Nothing}) = begin df_row.id_ = value end
+setId(df_row::DataFrames.DataFrameRow, value::Union{Char, Nothing}) = begin df_row.id_ = value end
 
 

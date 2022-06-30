@@ -34,11 +34,11 @@ mutable struct Atom <: AbstractAtom    #AbstractAtom inherits from AbstractCompo
     temp_factor_    ::Union{Float64,Nothing}
     selected_       ::Bool
     bonds_          ::Dict{Atom, Bond}
-    properties_     ::Vector{Tuple{String,UInt8}}
+    properties_     ::Vector{Tuple{Symbol,Any}}
 
     Atom() = new(nothing,nothing,nothing,nothing,nothing,nothing,nothing,
     nothing,nothing,nothing,nothing,nothing,nothing,nothing,nothing,nothing,
-    nothing,nothing,nothing,false,Dict{Atom, Bond}(),Vector{Tuple{String,UInt8}}())
+    nothing,nothing,nothing,false,Dict{Atom, Bond}(),Vector{Tuple{Symbol,Any}}())
 
 
         Atom(   name_           ,
@@ -82,7 +82,7 @@ mutable struct Atom <: AbstractAtom    #AbstractAtom inherits from AbstractCompo
                     temp_factor_    ,
                     false,
                     BondsDict(),
-                    Vector{Tuple{String,Int8}}()
+                    Vector{Tuple{Symbol,Any}}()
             )
 end
 

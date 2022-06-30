@@ -16,7 +16,7 @@ mutable struct Residue <: AbstractResidue
     next_                                       ::Union{Nothing,AbstractComposite}
     first_child_                                ::Union{Nothing,AbstractComposite}
     last_child_                                 ::Union{Nothing,AbstractComposite}
-    properties_                                 ::Vector{Tuple{String,UInt8}}
+    properties_                                 ::Vector{Tuple{Symbol,Any}}
     contains_selection_                         ::Union{Bool,Nothing}
     number_of_selected_children_                ::Union{Int64,Nothing}
     number_of_children_containing_selection_    ::Union{Int64,Nothing}
@@ -39,7 +39,7 @@ mutable struct Residue <: AbstractResidue
             next_                                       ::Union{Nothing,AbstractComposite},
             first_child_                                ::Union{Nothing,AbstractComposite},
             last_child_                                 ::Union{Nothing,AbstractComposite},
-            properties_                                 ::Vector{Tuple{String,UInt8}},
+            properties_                                 ::Vector{Tuple{Symbol,Any}},
             contains_selection_                         ::Union{Bool,Nothing},
             number_of_selected_children_                ::Union{Int64,Nothing},
             number_of_children_containing_selection_    ::Union{Int64,Nothing},

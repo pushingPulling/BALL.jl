@@ -44,17 +44,17 @@ mutable struct Bond <: AbstractBond
         name_                        ::String
         bond_order_                  ::Order
         bond_type_                   ::BondType
-        properties_                  ::Vector{Tuple{String,UInt8}}
+        properties_                  ::Vector{Tuple{Symbol,Any}}
 
 
         Bond(x::AbstractComposite, y::AbstractComposite, name::String, bond_order::Order,
-                bond_type::BondType, properties::Vector{Tuple{String,UInt8}}) = begin
+                bond_type::BondType, properties::Vector{Tuple{Symbol,Any}}) = begin
             throw(ErrorException("Bonds are only allowed between Atoms. Input: $x , $y."))
         end
 
         Bond(x::T, y::T, name::String, bond_order::Order,
                 bond_type::BondType,
-                properties::Vector{Tuple{String,UInt8}}) where T<: AbstractAtom = begin
+                properties::Vector{Tuple{Symbol,Any}}) where T<: AbstractAtom = begin
             if x == y
                 throw(ErrorException("Bonds between the same Atom are disallowed. Input: $x , $y."))
             end
@@ -69,7 +69,7 @@ end
 Bond(at1::AbstractAtom, at2::AbstractAtom;
         name::String ="",
         order::Order = ORDER__ANY, type::BondType = TYPE__UNKNOWN,
-        properties::Vector{Tuple{String,UInt8}} = Tuple{String,UInt8}[]) =
+        properties::Vector{Tuple{Symbol,Any}} = Tuple{Symbol,Any}[]) =
    Bond(at1,at2,name,order,type, properties)
 
 
@@ -80,7 +80,7 @@ Creates a Bond between two already existing Atoms. See `Order` and `BondType` in
 """
 createBond(at_owner::AbstractAtom, at_guest::AbstractAtom; name::String ="",
         order::Order = ORDER__ANY, type::BondType = TYPE__UNKNOWN,
-         properties::Vector{Tuple{String,UInt8}} = Tuple{String,UInt8}[]) = begin
+         properties::Vector{Tuple{Symbol,Any}} = Tuple{Symbol,Any}[]) = begin
     bondExists(at_owner,at_guest) && return nothing
     temp = Bond(at_owner, at_guest, name = name, order = order, type = type, properties = properties)
     at_owner.bonds_[at_guest] = temp
@@ -128,11 +128,11 @@ hasProperty(comp::Bond, property::String) = begin
 end
 
 """
-    getProperty(::Bond, ::Tuple{String,UInt8})
+    getProperty(::Bond, ::Tuple{Symbol,Any})
 """
-getProperty(comp::Bond, property::Tuple{String,UInt8}) = begin
+getProperty(comp::Bond, property::Tuple{Symbol,Any}) = begin
     if hasProperty(comp,property)
-        index = findfirst((x::Tuple{String,UInt8})-> property[1] == x[1], getProperties(comp))
+        index = findfirst((x::Tuple{Symbol,Any})-> property[1] == x[1], getProperties(comp))
         return getProperties(comp)[index][2]
     end
     return nothing
@@ -141,9 +141,9 @@ end
 """
     setProperty(::Bond, ::Tuple{String,UInt8})
 """
-setProperty(comp::Bond, property::Tuple{String,UInt8}) = begin
+setProperty(comp::Bond, property::Tuple{Symbol,Any}) = begin
     if hasProperty(comp,property[1])
-        index = findfirst((x::Tuple{String,UInt8})-> property[1] == x[1], getProperties(comp))
+        index = findfirst((x::Tuple{Symbol,Any})-> property[1] == x[1], getProperties(comp))
         deleteat!(getProperties(comp), index)
     end
     push!(comp.properties_, property)
@@ -152,7 +152,7 @@ end
 """
     setProperty(::Bond, ::Tuple{String,Bool})
 """
-setProperty(comp::Bond, property::Tuple{String,Bool}) = setProperty(comp,(property[1],UInt8(property[2])))
+#setProperty(comp::Bond, property::Tuple{Symbol,Bool}) = setProperty(comp,(property[1],property[2]))
 
 
 Base.show(io::IO, bond::Bond) = begin
